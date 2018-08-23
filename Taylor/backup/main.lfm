@@ -1,0 +1,69 @@
+object Form1: TForm1
+  Left = 311
+  Height = 600
+  Top = 99
+  Width = 900
+  Caption = 'Form1'
+  ClientHeight = 600
+  ClientWidth = 900
+  OnCreate = FormCreate
+  LCLVersion = '1.8.2.0'
+  object btnExecute: TButton
+    Left = 352
+    Height = 25
+    Top = 48
+    Width = 75
+    Caption = 'Execute'
+    OnClick = btnExecuteClick
+    TabOrder = 0
+  end
+  object EdiAngle: TEdit
+    Left = 240
+    Height = 23
+    Top = 8
+    Width = 80
+    TabOrder = 1
+    Text = '1'
+  end
+  object TaylorFunc: TComboBox
+    Left = 352
+    Height = 23
+    Top = 8
+    Width = 100
+    ItemHeight = 15
+    TabOrder = 2
+    Text = 'TaylorFunc'
+  end
+  object EdiError: TEdit
+    Left = 240
+    Height = 23
+    Top = 48
+    Width = 80
+    TabOrder = 3
+    Text = '0.1'
+  end
+  object LabAngle: TLabel
+    Left = 176
+    Height = 15
+    Top = 8
+    Width = 39
+    Caption = 'Angulo'
+    ParentColor = False
+  end
+  object LabError: TLabel
+    Left = 176
+    Height = 15
+    Top = 48
+    Width = 25
+    Caption = 'Error'
+    ParentColor = False
+  end
+  object EdiResult: TEdit
+    Left = 240
+    Height = 23
+    Top = 88
+    Width = 80
+    TabOrder = 4
+    Text = '0'
+  end
+end
