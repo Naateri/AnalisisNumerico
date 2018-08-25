@@ -9,6 +9,7 @@ unit main; //la unidad debe llamarse igual que el archivo
  String (todo lo que puedas)
  ShortString (string 255 caracteres max)
  Char
+ Boolean
 
  Importando:
  TStringList
@@ -70,12 +71,16 @@ var x: Real;
 begin
 
   Taylor := TTaylor.create();
-  TaylorFunc.Items.Assign( Taylor.FunctionList );
   Taylor.FunctionType := IntPtr(TaylorFunc.Items.Objects[ TaylorFunc.ItemIndex ]);
   Taylor.x := StrToFloat(EdiAngle.Text);
   Taylor.Error := StrToFloat(EdiError.Text);
   x := Taylor.Execute();
-  EdiResult.Text := FloatToStr(x);
+  if (Taylor.valid = True) then
+  begin
+      EdiResult.Text := FloatToStr(x);
+  end else begin
+      EdiResult.Text := 'ERROR';
+  end;
   Taylor.Destroy; //siempre destruir
 
 end;
@@ -83,6 +88,7 @@ end;
 procedure TForm1.FormCreate(Sender: TObject);
 begin
      Taylor := TTaylor.create();
+     TaylorFunc.Items.Assign( Taylor.FunctionList );
      TaylorFunc.ItemIndex := 0;
 end;
 

@@ -9,6 +9,7 @@ unit main; //la unidad debe llamarse igual que el archivo
  String (todo lo que puedas)
  ShortString (string 255 caracteres max)
  Char
+ Boolean
 
  Importando:
  TStringList
@@ -74,7 +75,12 @@ begin
   Taylor.x := StrToFloat(EdiAngle.Text);
   Taylor.Error := StrToFloat(EdiError.Text);
   x := Taylor.Execute();
-  EdiResult.Text := FloatToStr(x);
+  if (Taylor.valid = True) then
+  begin
+      EdiResult.Text := FloatToStr(x);
+  end else begin
+      EdiResult.Text := 'ERROR';
+  end;
   Taylor.Destroy; //siempre destruir
 
 end;
