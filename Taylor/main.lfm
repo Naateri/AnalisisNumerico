@@ -1,7 +1,7 @@
 object Form1: TForm1
-  Left = 607
+  Left = 259
   Height = 600
-  Top = 105
+  Top = 50
   Width = 900
   Caption = 'Form1'
   ClientHeight = 600
@@ -65,5 +65,15 @@ object Form1: TForm1
     Width = 80
     TabOrder = 4
     Text = '0'
+  end
+  object ResultMemo: TMemo
+    Left = 24
+    Height = 162
+    Top = 128
+    Width = 856
+    Lines.Strings = (
+      'ResultMemo'
+    )
+    TabOrder = 5
   end
 end

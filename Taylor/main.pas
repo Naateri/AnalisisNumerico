@@ -34,6 +34,7 @@ type //dentro defino una clase
   { TForm1 }
 
   TForm1 = class(TForm) //TForm1, hereda de TForm
+    ResultMemo: TMemo;
     TaylorFunc: TComboBox;
     btnExecute: TButton;
     EdiAngle: TEdit;
