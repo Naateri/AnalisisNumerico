@@ -5,18 +5,29 @@ unit main_NLE;
 interface
 
 uses
-  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
-  Grids, nle_methods;
+  Classes, SysUtils, FileUtil, TAGraph, TAFuncSeries, Forms, Controls, Graphics,
+  Dialogs, StdCtrls, Grids, nle_methods;
 
 type
 
-  { TForm1 }
+  { TGraph }
 
-  TForm1 = class(TForm)
-    Button1: TButton;
+  TGraph = class(TForm)
+    btnGraph: TButton;
+    btnCalculate: TButton;
+    Chart1: TChart;
+    EdiA: TEdit;
+    EdiB: TEdit;
+    EdiError: TEdit;
+    Func1: TFuncSeries;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
     TempResult: TEdit;
     StringGrid1: TStringGrid;
-    procedure Button1Click(Sender: TObject);
+    procedure btnCalculateClick(Sender: TObject);
+    procedure btnGraphClick(Sender: TObject);
+    procedure Func1Calculate(const AX: Double; out AY: Double);
 
   private
       Methods: TNLEMethods;
@@ -26,16 +37,25 @@ type
   end;
 
 var
-  Form1: TForm1;
+  Graph: TGraph;
 
 implementation
 
 {$R *.lfm}
 
-{ TForm1 }
+{ TGraph }
 
-procedure TForm1.Button1Click(Sender: TObject);
-var SL: TStringList;
+procedure TGraph.btnGraphClick(Sender: TObject);
+begin
+
+     Func1.Active:= False;
+     Func1.Pen.Color:= clBlue;
+     Func1.Active:= True;
+
+end;
+
+procedure TGraph.btnCalculateClick(Sender: TObject);
+var //SL: TStringList;
   Res: Real;
 begin
      {SL := TStringList.Create;
@@ -45,15 +65,30 @@ begin
 
      StringGrid1.Cols[ 1 ].Assign(SL); //how to fill a StringGrid with a TStringList}
      Methods := TNLEMethods.create;
-     Methods.a := 1.5;
-     Methods.b := 2.5;
+     Methods.a := StrToFloat(EdiA.Text);
+     Methods.b := StrToFloat(EdiB.Text);
+     Methods.error:= StrToFloat(EdiError.Text);
      Res := Methods.Execute();
-     TempResult.Text := FloatToStr(Res);
-     StringGrid1.Cols[ 1 ].Assign(Methods.SolutionSequence);
-     StringGrid1.Cols[ 2 ].Assign(Methods.ErrorSequence);
-
+     if (Methods.globalBolzano = True) then
+     begin
+         TempResult.Text := FloatToStr(Res);
+         StringGrid1.Cols[ 0 ].Assign(Methods.nSequence);
+         StringGrid1.Cols[ 1 ].Assign(Methods.SolutionSequence);
+         StringGrid1.Cols[ 2 ].Assign(Methods.ErrorSequence);
+     end else
+     begin
+       StringGrid1.Cells[0,0] := 'No se';
+       StringGrid1.Cells[1,0] := 'encontro';
+       StringGrid1.Cells[2,0] := 'respuesta';
+     end;
      Methods.Destroy;
+end;
 
+procedure TGraph.Func1Calculate(const AX: Double; out AY: Double);
+begin
+  Methods := TNLEMethods.create;
+  AY := Methods.f( AX );
+  Methods.Destroy;
 end;
 
 end.

@@ -25,10 +25,13 @@
         <FormatVersion Value="1"/>
       </local>
     </RunParams>
-    <RequiredPackages Count="1">
+    <RequiredPackages Count="2">
       <Item1>
-        <PackageName Value="LCL"/>
+        <PackageName Value="TAChartLazarusPkg"/>
       </Item1>
+      <Item2>
+        <PackageName Value="LCL"/>
+      </Item2>
     </RequiredPackages>
     <Units Count="3">
       <Unit0>
@@ -38,7 +41,7 @@
       <Unit1>
         <Filename Value="main_nle.pas"/>
         <IsPartOfProject Value="True"/>
-        <ComponentName Value="Form1"/>
+        <ComponentName Value="Graph"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="main_NLE"/>
       </Unit1>

@@ -13,6 +13,8 @@ type
       //x: Real;
       a, b: Real; //bounds
       error: Real;
+      globalBolzano: Boolean;
+      nSequence: TStringList;
       ErrorSequence: TStringList;
       SolutionSequence: TStringList;
       function f(x: Real): Real;
@@ -29,6 +31,9 @@ type
         function Execute(): Real;
 
       end;
+    const
+         IsBisection = 1;
+         IsFakePos = 2;
 
 implementation
 
@@ -39,29 +44,37 @@ constructor TNLEMethods.create;
 begin
      ErrorSequence := TStringList.Create;
      SolutionSequence := TStringList.Create;
+     nSequence := TStringList.Create;
 //     ErrorSequence.Add(' ');
 //     SolutionSequence.Add(' ');
-     error:= 0.001;
+     error:= 0.0001;
 end;
 
 destructor TNLEMethods.Destroy;
 begin
      ErrorSequence.Destroy;
      SolutionSequence.Destroy;
+     nSequence.Destroy;
 end;
 
 function TNLEMethods.f(x: Real): Real;
 begin
-     //Result := power(x, 3);
-     Result := power(x, 2) - ln(x) - sin(x) - x;
+     Result := power(x, 3) + 4;
+     //Result := power(x, 2) - ln(x) - sin(x) - x;
 end;
 
 function TNLEMethods.Bolzano(): Boolean;
 begin
      if ( ( f(a) * f(b) ) < 0) then
-        Result := True
+     begin
+        Result := True;
+        globalBolzano := True;
+     end
      else
+     begin
         Result := False;
+        globalBolzano:= False;
+     end;
 end;
 
 function TNLEMethods.Bisection(): Real;
@@ -80,7 +93,9 @@ begin
      newA := a;
      newB := b;
      xnn := (a + b) / 2; //first xn
+     newError := 10;
      repeat
+       nSequence.Add(IntToStr(n));
        xn := xnn; //storing previous value
        xnn := (newA + newB) / 2;
        SolutionSequence.Add(FloatToStr(xnn));
@@ -129,7 +144,9 @@ begin
      newA := a;
      newB := b;
      xnn := a - ( f(a) ) * ( (b - a)/(f(b) - f(a)) ); //first xn
+     newError := 10;
      repeat
+       nSequence.Add(IntToStr(n));
        xn := xnn;
        xnn := newA - ( f(newA) ) * ( (newB - newA)/(f(newB) - f(newA)) );
        SolutionSequence.Add(FloatToStr(xnn));
@@ -141,17 +158,17 @@ begin
        else
            ErrorSequence.Add('-');
 
-       sign := f(a) * f(xnn);
+       sign := f(newA) * f(xnn);
        if ( sign < 0) then
-          newA := xnn
+          newB := xnn
        else if (sign > 0) then
-            newB := xnn
+            newA := xnn
        else //xn is solution
             begin
-                if (a = 0) then
+                if (newA = 0) then
                    Result := xnn
                 else //xn is 0
-                   Result := a;
+                   Result := newA;
                 Exit;
             end;
 
@@ -162,7 +179,8 @@ end;
 
 function TNLEMethods.Execute(): Real;
 begin
-     Result := Bisection();
+//     Result := Bisection();
+     Result := FakePosition();
 end;
 
 end.
