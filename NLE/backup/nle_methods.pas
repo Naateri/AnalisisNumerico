@@ -22,6 +22,7 @@ type
       func: String;
       Parse: TParseMath;
       function f(x: Real): Real;
+      function f2(x: Real): Real;
       function fd(x: Real): Real; //differential
 
       private
@@ -36,6 +37,7 @@ type
         constructor create;
         destructor Destroy; override;
         function Execute(): Real;
+        function Intersection(): Real;
 
       end;
     const
@@ -80,12 +82,18 @@ end;
 
 function TNLEMethods.f(x: Real): Real;
 begin
-//     Result := 2.3 * exp(0.5*x) + 3 * power(x,4) -  power(x, 3) + power (x,2) + 3*x - 4;
+     Result := 2.3 * exp(0.5*x) + 3 * power(x,4) -  power(x, 3) + power (x,2) + 3*x - 4;
      //Result := power(x, 2) - ln(x) - sin(x) - x;
-     Result := 3*cos(x) - 4;
+//     Result := (cos(x)+2)/3;
+
 {     Parse.Expression := func;
      Parse.NewValue('x', x);
      Result := Parse.Evaluate();}
+end;
+
+function TNLEMethods.f2(x: Real): Real;
+begin
+     Result := power(x, 2) + 5;
 end;
 
 function TNLEMethods.fd(x: Real): Real;
@@ -325,6 +333,41 @@ begin
           IsSecant: Result := Secante();
           IsFixedPoint: Result := FixedPoint();
      end;
+end;
+
+function TNLEMethods.Intersection(): Real;
+var n: Integer = 0;
+   xn, xnn, newError: Real; //xnn: newest result, xn: stores previous result
+   h, fxn, fxnh: Real;
+begin
+//     Parse.Expression:= func;
+     h := error/10;
+     xnn := a; //first xn
+     newError := 10;
+     //SolutionSequence.Add(FloatToStr(xnn));
+     repeat
+       nSequence.Add(IntToStr(n));
+       xn := xnn; //storing previous value
+       fxn := f(xn) - f2(xn);
+       fxnh := (f(xn+h) - f2(xn+h)) - (f(xn-h) - f2(xn-h));
+       if (fxnh = 0) then
+       begin
+           xn := xn + 0.1;
+           fxnh := f(xn+h) - f(xn-h);
+       end;
+       xnn := xn - ( ( 2*h*(fxn) ) / fxnh);
+       SolutionSequence.Add(FloatToStr(xnn));
+       if (n > 0) then
+       begin
+              newError := abs(xn - xnn);
+              ErrorSequence.Add(FloatToStr(newError));
+       end
+       else
+           ErrorSequence.Add('-');
+
+       n := n + 1;
+     until ( (newError <= error) or (n > Top) );
+     Result := xnn;
 end;
 
 end.
