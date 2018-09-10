@@ -30,6 +30,7 @@ type
         function FakePosition(): Real;
         function Newton(): Real;
         function Secante(): Real;
+        function FixedPoint(): Real; //intersection with y = x
 
       public
         constructor create;
@@ -42,6 +43,7 @@ type
          IsFakePos = 1;
          IsNewton = 2;
          IsSecant = 3;
+         IsFixedPoint = 4;
 
 implementation
 
@@ -61,6 +63,7 @@ begin
      MethodList.AddObject('Falsa Posicion', TObject (IsFakePos) );
      MethodList.AddObject('Newton', TObject (IsNewton) );
      MethodList.AddObject('Secante', TObject (IsSecant) );
+     MethodList.AddObject('Punto Fijo', TObject (IsFixedPoint) );
 {     Parse := TParseMath.create();
      Parse.AddVariable( 'x', 0);
      Parse.Expression:= 'x';}
@@ -72,13 +75,14 @@ begin
      SolutionSequence.Destroy;
      nSequence.Destroy;
      MethodList.Destroy;
-     Parse.destroy;
+//     Parse.destroy;
 end;
 
 function TNLEMethods.f(x: Real): Real;
 begin
-     Result := 2.3 * exp(0.5*x) + 3 * power(x,4) -  power(x, 3) + power (x,2) + 3*x - 4;
+//     Result := 2.3 * exp(0.5*x) + 3 * power(x,4) -  power(x, 3) + power (x,2) + 3*x - 4;
      //Result := power(x, 2) - ln(x) - sin(x) - x;
+     Result := 3*cos(x) - 4;
 {     Parse.Expression := func;
      Parse.NewValue('x', x);
      Result := Parse.Evaluate();}
@@ -277,6 +281,40 @@ begin
      Result := xnn;
 end;
 
+function TNLEMethods.FixedPoint(): Real;
+var n: Integer = 0;
+   xn, xnn, newError: Real; //xnn: newest result, xn: stores previous result
+begin
+//     Parse.Expression:= func;
+     xnn := a; //first xn
+     newError := 10;
+     //SolutionSequence.Add(FloatToStr(xnn));
+     repeat
+       nSequence.Add(IntToStr(n));
+       xn := xnn; //storing previous value
+       xnn := f(xn);
+       SolutionSequence.Add(FloatToStr(xnn));
+       if (n > 0) then
+       begin
+            if ( abs(xn-xnn) >= newError ) then
+            begin
+                 ShowMessage('El error está creciendo. Fin de la funcion. Escoja otro numero.');
+                 Exit;
+            end
+            else begin
+              newError := abs(xn - xnn);
+              ErrorSequence.Add(FloatToStr(newError));
+            end;
+       end
+       else
+           ErrorSequence.Add('-');
+
+       n := n + 1;
+     until ( (newError <= error) or (n > Top) );
+     Result := xnn;
+
+
+end;
 
 function TNLEMethods.Execute(): Real;
 begin
@@ -285,6 +323,7 @@ begin
           IsFakePos: Result := FakePosition();
           IsNewton: Result := Newton();
           IsSecant: Result := Secante();
+          IsFixedPoint: Result := FixedPoint();
      end;
 end;
 

@@ -16,8 +16,7 @@ type
     btnGraph: TButton;
     btnCalculate: TButton;
     Chart1: TChart;
-    Chart1ConstantLine1: TConstantLine;
-    Chart1ConstantLine2: TConstantLine;
+    Func2: TFuncSeries;
     Chart1LineSeries1: TLineSeries;
     cboMethods: TComboBox;
     EdiA: TEdit;
@@ -37,6 +36,7 @@ type
     procedure btnGraphClick(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure Func1Calculate(const AX: Double; out AY: Double);
+    procedure Func2Calculate(const AX: Double; out AY: Double);
 
   private
       Methods: TNLEMethods;
@@ -79,6 +79,7 @@ begin
      SL.Add('1.23');
      SL.Add('1.2334');
      StringGrid1.Cols[ 1 ].Assign(SL); //how to fill a StringGrid with a TStringList}
+     Func2.Active:= False;
      Methods := TNLEMethods.create;
      Methods.a := StrToFloat(EdiA.Text);
      Methods.b := StrToFloat(EdiB.Text);
@@ -95,7 +96,14 @@ begin
          LabResult.Caption := FloatToStr(Res);
          LabIter.Caption:= IntToStr(Methods.nSequence.Count);
          Chart1LineSeries1.ShowPoints:= True;
-         Chart1LineSeries1.AddXY(Res, 0);
+         if (Methods.Method = 4) then
+         begin
+             Func2.Active:= False;
+             Func2.Pen.Color:= clRed;
+             Func2.Active:= True;
+             Chart1LineSeries1.AddXY(Res, Res);
+         end else
+             Chart1LineSeries1.AddXY(Res, 0);
      end else
      begin
        StringGrid1.Cells[0,0] := 'No se';
@@ -112,6 +120,11 @@ begin
   Methods := TNLEMethods.create;
   AY := Methods.f( AX );
   Methods.Destroy;
+end;
+
+procedure TGraph.Func2Calculate(const AX: Double; out AY: Double);
+begin
+  AY := AX;
 end;
 
 end.

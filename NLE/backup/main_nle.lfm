@@ -81,12 +81,9 @@ object Graph: TGraph
     end
     object Chart1LineSeries1: TLineSeries
     end
-    object Chart1ConstantLine1: TConstantLine
-      Position = 0
-    end
-    object Chart1ConstantLine2: TConstantLine
-      LineStyle = lsVertical
-      Position = 0
+    object Func2: TFuncSeries
+      Active = False
+      OnCalculate = Func2Calculate
     end
   end
   object btnCalculate: TButton
