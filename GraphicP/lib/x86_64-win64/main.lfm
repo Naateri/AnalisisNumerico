@@ -1,0 +1,74 @@
+object frmGraphics: TfrmGraphics
+  Left = 318
+  Height = 408
+  Top = 146
+  Width = 787
+  Caption = 'frmGraphics'
+  ClientHeight = 408
+  ClientWidth = 787
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  LCLVersion = '1.8.2.0'
+  object charFunction: TChart
+    Left = 256
+    Height = 408
+    Top = 0
+    Width = 531
+    AxisList = <    
+      item
+        Grid.Color = clSilver
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Grid.Color = clSilver
+        Alignment = calBottom
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelBrush.Style = bsClear
+      end>
+    BackColor = clWhite
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Toolset = ChartToolset1
+    Align = alClient
+    Color = clWhite
+    object charFunctionFuncSeries1: TFuncSeries
+      Active = False
+      OnCalculate = charFunctionFuncSeries1Calculate
+    end
+    object charFunctionConstantLine1: TConstantLine
+      LineStyle = lsVertical
+      Position = 0
+    end
+    object charFunctionConstantLine2: TConstantLine
+      Position = 0
+    end
+    object charFunctionLineSeries1: TLineSeries
+    end
+  end
+  object GraphicScroll: TPanel
+    Left = 0
+    Height = 408
+    Top = 0
+    Width = 256
+    Align = alLeft
+    ParentColor = False
+    TabOrder = 1
+  end
+  object ChartToolset1: TChartToolset
+    left = 666
+    top = 225
+    object ChartToolset1DataPointClickTool1: TDataPointClickTool
+      Shift = [ssLeft]
+      OnPointClick = ChartToolset1DataPointClickTool1PointClick
+    end
+  end
+end
