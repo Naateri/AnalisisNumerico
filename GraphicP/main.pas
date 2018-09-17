@@ -21,9 +21,16 @@ type
     charFunctionLineSeries1: TLineSeries;
     ChartToolset1: TChartToolset;
     ChartToolset1DataPointClickTool1: TDataPointClickTool;
+    ChartToolset1PanDragTool1: TPanDragTool;
+    ChartToolset1ZoomDragTool1: TZoomDragTool;
+    ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool;
     GraphicScroll: TPanel;
     procedure charFunctionFuncSeries1Calculate(const AX: Double; out AY: Double);
     procedure ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool;
+      APoint: TPoint);
+    procedure ChartToolset1PanClickTool1AfterKeyDown(ATool: TChartTool;
+      APoint: TPoint);
+    procedure ChartToolset1PanDragTool1AfterKeyDown(ATool: TChartTool;
       APoint: TPoint);
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
@@ -91,7 +98,7 @@ begin
 //          with TFuncSeries(Series) do begin
         x := pg.X;
         y := pg.Y;
-        ShowMessage('x: ' + FloatToStr(x) + ', y: ' + FloatToStr(y));
+//        ShowMessage('x: ' + FloatToStr(x) + ', y: ' + FloatToStr(y));
         if (clickFunc1 = False) then
         begin
             Parse := TParseMath.create();
@@ -103,7 +110,7 @@ begin
                if ( abs(temp - y) <= 0.1) then
                begin
                   func1 := GraphicFrame[i].ediF.Text;
-                  ShowMessage('final func: ' + func1 );
+                  //ShowMessage('final func: ' + func1 );
                   Parse.destroy;
                   break;
                end;
@@ -118,9 +125,11 @@ begin
             newA := (pg.X + tempX) / 2;
             Methods.a := newA;
             Methods.func := func1;
+            charFunctionLineSeries1.ShowPoints:= False;
+            charFunctionLineSeries1.Clear;
             for i := 0 to GFMaxPosition - 1 do begin //checks which function
                Parse.Expression := GraphicFrame[i].ediF.Text; //we've just clicked
-               ShowMessage('func: ' + Parse.Expression );
+               //ShowMessage('func: ' + Parse.Expression );
                Parse.NewValue('x', x);
                temp := Parse.Evaluate();
                if ( abs(temp - y) <= 0.1 ) then //temp = y is broken
@@ -131,9 +140,15 @@ begin
                end;
            end;
             Methods.func := func1;
+            if (Methods.func = Methods.func2) then
+            begin
+                ShowMessage('Ha seleccionado la misma funcion dos veces. Seleccione dos diferentes.');
+                clickFunc1 := False;
+                Exit;
+            end;
             Res := Methods.Intersection();
-            charFunctionLineSeries1.ShowPoints:= True;
             charFunctionLineSeries1.AddXY(Res, Methods.f(Res));
+            charFunctionLineSeries1.ShowPoints:= True;
             //LabResult.Caption := FloatToStr(Res);
             ShowMessage('Interseccion: ' + FloatToStr(Res) + ', ' +
                                        FloatToStr(Methods.f(Res)) );
@@ -144,6 +159,18 @@ begin
         clickFunc1:= True;
         tempX := x;
     end;
+
+end;
+
+procedure TfrmGraphics.ChartToolset1PanClickTool1AfterKeyDown(
+  ATool: TChartTool; APoint: TPoint);
+begin
+
+end;
+
+procedure TfrmGraphics.ChartToolset1PanDragTool1AfterKeyDown(ATool: TChartTool;
+  APoint: TPoint);
+begin
 
 end;
 

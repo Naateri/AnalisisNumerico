@@ -14,6 +14,7 @@ object frmGraphics: TfrmGraphics
     Height = 408
     Top = 0
     Width = 531
+    AutoFocus = True
     AxisList = <    
       item
         Grid.Color = clSilver
@@ -30,8 +31,11 @@ object frmGraphics: TfrmGraphics
         Title.LabelBrush.Style = bsClear
       end>
     BackColor = clWhite
+    Extent.XMax = 50
+    Extent.YMax = 50
     Foot.Brush.Color = clBtnFace
     Foot.Font.Color = clBlue
+    Proportional = True
     Title.Brush.Color = clBtnFace
     Title.Font.Color = clBlue
     Title.Text.Strings = (
@@ -69,6 +73,18 @@ object frmGraphics: TfrmGraphics
     object ChartToolset1DataPointClickTool1: TDataPointClickTool
       Shift = [ssLeft]
       OnPointClick = ChartToolset1DataPointClickTool1PointClick
+    end
+    object ChartToolset1ZoomDragTool1: TZoomDragTool
+      Shift = [ssLeft]
+      Brush.Style = bsClear
+    end
+    object ChartToolset1ZoomMouseWheelTool1: TZoomMouseWheelTool
+      Enabled = False
+      ZoomFactor = 0.1
+      ZoomRatio = 0.1
+    end
+    object ChartToolset1PanDragTool1: TPanDragTool
+      Shift = [ssRight]
     end
   end
 end
