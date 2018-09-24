@@ -24,25 +24,37 @@ object Form1: TForm1
       98
     )
     Cells = (
-      6
+      10
       0
       0
-      '1'
+      '1985'
       0
       1
-      '2'
+      '1995'
       0
       2
-      '0'
+      '2005'
+      0
+      3
+      '2015'
+      0
+      4
+      '2.7'
       1
       0
-      '3'
+      '193.4'
       1
       1
-      '-3'
+      '180.8'
       1
       2
-      '0'
+      '350.9'
+      1
+      3
+      '456.3'
+      1
+      4
+      '2.7'
     )
   end
   object Label1: TLabel
@@ -90,6 +102,7 @@ object Form1: TForm1
       end>
     Foot.Brush.Color = clBtnFace
     Foot.Font.Color = clBlue
+    Proportional = True
     Title.Brush.Color = clBtnFace
     Title.Font.Color = clBlue
     Title.Text.Strings = (
@@ -98,7 +111,48 @@ object Form1: TForm1
     Align = alLeft
     object Chart1FuncSeries1: TFuncSeries
       Active = False
+      Extent.UseXMax = True
+      Extent.UseXMin = True
+      Extent.UseYMax = True
+      Extent.UseYMin = True
+      Extent.XMax = 10
+      Extent.YMax = 9
       OnCalculate = Chart1FuncSeries1Calculate
     end
+  end
+  object MemFunction: TMemo
+    Left = 720
+    Height = 90
+    Top = 312
+    Width = 150
+    Lines.Strings = (
+      'MemFunction'
+    )
+    TabOrder = 4
+  end
+  object ediX: TEdit
+    Left = 723
+    Height = 23
+    Top = 416
+    Width = 80
+    TabOrder = 5
+    Text = 'ediX'
+  end
+  object ediYVal: TEdit
+    Left = 723
+    Height = 23
+    Top = 456
+    Width = 80
+    TabOrder = 6
+    Text = 'ediYVal'
+  end
+  object btnFindY: TButton
+    Left = 824
+    Height = 25
+    Top = 416
+    Width = 75
+    Caption = 'Find Y'
+    OnClick = btnFindYClick
+    TabOrder = 7
   end
 end

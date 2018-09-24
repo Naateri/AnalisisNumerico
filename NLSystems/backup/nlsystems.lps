@@ -20,6 +20,7 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="mainNLSystems"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="81"/>
         <CursorPos X="18" Y="88"/>
         <UsageCount Value="25"/>
@@ -58,10 +59,9 @@
         <Filename Value="nonlinearsystem.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="NonLinearSystem"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="292"/>
-        <CursorPos X="29" Y="299"/>
+        <TopLine Value="331"/>
+        <CursorPos Y="349"/>
         <UsageCount Value="25"/>
         <Loaded Value="True"/>
       </Unit5>
