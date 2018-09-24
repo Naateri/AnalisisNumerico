@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectSession>
+    <PathDelim Value="\"/>
+    <Version Value="10"/>
+    <BuildModes Active="Default"/>
+    <Units Count="9">
+      <Unit0>
+        <Filename Value="nlsystems.lpr"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="4"/>
+        <CursorPos X="7" Y="2"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit0>
+      <Unit1>
+        <Filename Value="mainnlsystems.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="mainNLSystems"/>
+        <TopLine Value="81"/>
+        <CursorPos X="18" Y="88"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
+      </Unit1>
+      <Unit2>
+        <Filename Value="main_matrix.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="137"/>
+        <CursorPos X="18" Y="155"/>
+        <UsageCount Value="25"/>
+      </Unit2>
+      <Unit3>
+        <Filename Value="mymatrix.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MyMatrix"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="289"/>
+        <CursorPos X="24" Y="294"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit3>
+      <Unit4>
+        <Filename Value="parsemath.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ParseMath"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="47"/>
+        <CursorPos X="9" Y="61"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="nonlinearsystem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="NonLinearSystem"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="292"/>
+        <CursorPos X="29" Y="299"/>
+        <UsageCount Value="25"/>
+        <Loaded Value="True"/>
+      </Unit5>
+      <Unit6>
+        <Filename Value="..\Matrix\main_matrix.pas"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="137"/>
+        <CursorPos Y="155"/>
+        <UsageCount Value="10"/>
+      </Unit6>
+      <Unit7>
+        <Filename Value="..\Matrix\mymatrix.pas"/>
+        <UnitName Value="MyMatrix"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="429"/>
+        <CursorPos Y="447"/>
+        <UsageCount Value="10"/>
+      </Unit7>
+      <Unit8>
+        <Filename Value="..\..\..\Downloads\Parse\parsemath.pas"/>
+        <UnitName Value="ParseMath"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="200"/>
+        <CursorPos Y="218"/>
+        <UsageCount Value="10"/>
+      </Unit8>
+    </Units>
+    <JumpHistory Count="30" HistoryIndex="29">
+      <Position1>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="64" Column="3" TopLine="62"/>
+      </Position1>
+      <Position2>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="65" Column="3" TopLine="63"/>
+      </Position2>
+      <Position3>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="66" Column="3" TopLine="64"/>
+      </Position3>
+      <Position4>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="67" Column="3" TopLine="65"/>
+      </Position4>
+      <Position5>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="68" Column="3" TopLine="66"/>
+      </Position5>
+      <Position6>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="69" Column="3" TopLine="67"/>
+      </Position6>
+      <Position7>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="71" Column="3" TopLine="69"/>
+      </Position7>
+      <Position8>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="77" TopLine="67"/>
+      </Position8>
+      <Position9>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="78" TopLine="78"/>
+      </Position9>
+      <Position10>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="79" TopLine="79"/>
+      </Position10>
+      <Position11>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="80" TopLine="80"/>
+      </Position11>
+      <Position12>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="81" TopLine="81"/>
+      </Position12>
+      <Position13>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="82" TopLine="82"/>
+      </Position13>
+      <Position14>
+        <Filename Value="nonlinearsystem.pas"/>
+        <Caret Line="119" Column="27" TopLine="111"/>
+      </Position14>
+      <Position15>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="84" Column="47" TopLine="76"/>
+      </Position15>
+      <Position16>
+        <Filename Value="nonlinearsystem.pas"/>
+        <Caret Line="244" Column="113" TopLine="222"/>
+      </Position16>
+      <Position17>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="95" Column="6" TopLine="78"/>
+      </Position17>
+      <Position18>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="96" Column="6" TopLine="79"/>
+      </Position18>
+      <Position19>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="103" Column="6" TopLine="85"/>
+      </Position19>
+      <Position20>
+        <Filename Value="nonlinearsystem.pas"/>
+        <Caret Line="105" Column="23" TopLine="92"/>
+      </Position20>
+      <Position21>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="83" Column="16" TopLine="77"/>
+      </Position21>
+      <Position22>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="89" Column="53" TopLine="80"/>
+      </Position22>
+      <Position23>
+        <Filename Value="nonlinearsystem.pas"/>
+        <Caret Line="317" Column="25" TopLine="300"/>
+      </Position23>
+      <Position24>
+        <Filename Value="nonlinearsystem.pas"/>
+        <Caret Line="135" Column="23" TopLine="127"/>
+      </Position24>
+      <Position25>
+        <Filename Value="nonlinearsystem.pas"/>
+        <Caret Line="148" Column="80" TopLine="137"/>
+      </Position25>
+      <Position26>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="92" Column="12" TopLine="80"/>
+      </Position26>
+      <Position27>
+        <Filename Value="mainnlsystems.pas"/>
+        <Caret Line="98" Column="17" TopLine="80"/>
+      </Position27>
+      <Position28>
+        <Filename Value="nonlinearsystem.pas"/>
+        <Caret Line="303" Column="47" TopLine="286"/>
+      </Position28>
+      <Position29>
+        <Filename Value="nonlinearsystem.pas"/>
+        <Caret Line="297" Column="65" TopLine="288"/>
+      </Position29>
+      <Position30>
+        <Filename Value="nonlinearsystem.pas"/>
+        <Caret Line="315" Column="51" TopLine="301"/>
+      </Position30>
+    </JumpHistory>
+  </ProjectSession>
+</CONFIG>

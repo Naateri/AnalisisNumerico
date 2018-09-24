@@ -1,0 +1,104 @@
+object Form1: TForm1
+  Left = 337
+  Height = 512
+  Top = 119
+  Width = 955
+  Caption = 'Form1'
+  ClientHeight = 512
+  ClientWidth = 955
+  OnCreate = FormCreate
+  LCLVersion = '1.8.2.0'
+  object StringGrid1: TStringGrid
+    Left = 728
+    Height = 172
+    Top = 24
+    Width = 200
+    AutoFillColumns = True
+    ColCount = 2
+    FixedCols = 0
+    FixedRows = 0
+    RowCount = 6
+    TabOrder = 0
+    ColWidths = (
+      98
+      98
+    )
+    Cells = (
+      6
+      0
+      0
+      '1'
+      0
+      1
+      '2'
+      0
+      2
+      '0'
+      1
+      0
+      '3'
+      1
+      1
+      '-3'
+      1
+      2
+      '0'
+    )
+  end
+  object Label1: TLabel
+    Left = 738
+    Height = 15
+    Top = 217
+    Width = 37
+    Caption = 'Puntos'
+    ParentColor = False
+  end
+  object EdiPuntos: TEdit
+    Left = 800
+    Height = 23
+    Top = 209
+    Width = 80
+    TabOrder = 1
+    Text = '3'
+  end
+  object btnGraph: TButton
+    Left = 728
+    Height = 25
+    Top = 256
+    Width = 75
+    Caption = 'Graph'
+    OnClick = btnGraphClick
+    TabOrder = 2
+  end
+  object Chart1: TChart
+    Left = 0
+    Height = 512
+    Top = 0
+    Width = 496
+    AxisList = <    
+      item
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+        Title.LabelBrush.Style = bsClear
+      end    
+      item
+        Alignment = calBottom
+        Marks.LabelBrush.Style = bsClear
+        Minors = <>
+        Title.LabelBrush.Style = bsClear
+      end>
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Align = alLeft
+    object Chart1FuncSeries1: TFuncSeries
+      Active = False
+      OnCalculate = Chart1FuncSeries1Calculate
+    end
+  end
+end
