@@ -163,11 +163,6 @@ begin
 
        xn := Matrices.Resta(xn, temp2);
        Result := xn;
-{       a := xn[0,0];
-       b := xn[1,0];
-       c := xn[2,0];
-       d := xn[3,0];
-       }
        for i := 0 to num_equations - 1 do
          begin
                  solutions[i] := xn[i][0];

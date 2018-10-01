@@ -32,7 +32,7 @@ object Form1: TForm1
     Top = 24
     Width = 240
     TabOrder = 0
-    Text = 'power(x,2) + power(y,2) - 4'
+    Text = 'power(e,x) + (ln(x)/ln(3)) + y - e'
   end
   object EdiEcu2: TEdit
     Left = 96
@@ -40,7 +40,7 @@ object Form1: TForm1
     Top = 64
     Width = 240
     TabOrder = 1
-    Text = 'power(x,2) - power(y,2) - 4'
+    Text = 'power(x,2) + power(y,2) - z'
   end
   object EAllowed: TLabel
     Left = 24
@@ -241,7 +241,7 @@ object Form1: TForm1
     Top = 96
     Width = 240
     TabOrder = 13
-    Text = 'power(w,2) + arctan(x) - pi/4 - 4'
+    Text = 'power(x,3) + 3*power(y,3) + 4*z -6'
   end
   object EdiEcu4: TEdit
     Left = 96

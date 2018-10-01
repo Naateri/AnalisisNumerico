@@ -189,7 +189,6 @@ begin
        SequenceY.Add( FloatToStr(resB) );}
        n := n + 1;
      until (Error <= ErrorAllowed) or (n >= Top);
-
 end;
 
 end.
