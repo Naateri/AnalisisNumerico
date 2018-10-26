@@ -1,0 +1,59 @@
+object Form1: TForm1
+  Left = 319
+  Height = 358
+  Top = 169
+  Width = 723
+  Caption = 'Form1'
+  ClientHeight = 358
+  ClientWidth = 723
+  LCLVersion = '1.6.0.4'
+  object ediA: TEdit
+    Left = 88
+    Height = 27
+    Top = 24
+    Width = 80
+    TabOrder = 0
+    Text = '2'
+  end
+  object ediB: TEdit
+    Left = 88
+    Height = 27
+    Top = 72
+    Width = 80
+    TabOrder = 1
+    Text = '3'
+  end
+  object LabResult: TLabel
+    Left = 88
+    Height = 17
+    Top = 152
+    Width = 56
+    Caption = 'Number'
+    ParentColor = False
+  end
+  object ediFunc: TEdit
+    Left = 232
+    Height = 27
+    Top = 24
+    Width = 200
+    TabOrder = 2
+    Text = 'power(x,3)'
+  end
+  object btnIntegrate: TButton
+    Left = 232
+    Height = 25
+    Top = 80
+    Width = 75
+    Caption = 'Integrate'
+    OnClick = btnIntegrateClick
+    TabOrder = 3
+  end
+  object ediH: TEdit
+    Left = 88
+    Height = 27
+    Top = 112
+    Width = 80
+    TabOrder = 4
+    Text = '0.5'
+  end
+end

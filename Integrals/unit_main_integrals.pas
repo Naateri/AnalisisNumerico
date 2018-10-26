@@ -1,0 +1,48 @@
+unit unit_main_integrals;
+
+{$mode objfpc}{$H+}
+
+interface
+
+uses
+  Classes, SysUtils, FileUtil, Forms, Controls, Graphics, Dialogs, StdCtrls,
+  Integrals, ParseMath;
+
+type
+
+  { TForm1 }
+
+  TForm1 = class(TForm)
+    btnIntegrate: TButton;
+    ediA: TEdit;
+    ediB: TEdit;
+    ediFunc: TEdit;
+    ediH: TEdit;
+    LabResult: TLabel;
+    procedure btnIntegrateClick(Sender: TObject);
+  private
+         Integrals: TIntegralMethods;
+  public
+    { public declarations }
+  end;
+
+var
+  Form1: TForm1;
+
+implementation
+
+{$R *.lfm}
+
+{ TForm1 }
+
+procedure TForm1.btnIntegrateClick(Sender: TObject);
+begin
+  Integrals := TIntegralMethods.create;
+  Integrals.a := StrToFloat(ediA.Text);
+  Integrals.b := StrToFloat(ediB.Text);
+  Integrals.h := StrToFloat(ediH.Text);
+  LabResult.Caption := FloatToStr(Integrals.Execute());
+end;
+
+end.
+

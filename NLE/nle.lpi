@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CONFIG>
   <ProjectOptions>
-    <Version Value="10"/>
+    <Version Value="9"/>
     <PathDelim Value="\"/>
     <General>
       <SessionStorage Value="InProjectDir"/>
@@ -30,7 +30,7 @@
         <PackageName Value="LCL"/>
       </Item2>
     </RequiredPackages>
-    <Units Count="3">
+    <Units Count="4">
       <Unit0>
         <Filename Value="nle.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -47,6 +47,11 @@
         <Filename Value="nle_methods.pas"/>
         <IsPartOfProject Value="True"/>
       </Unit2>
+      <Unit3>
+        <Filename Value="integrals.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="Integrals"/>
+      </Unit3>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

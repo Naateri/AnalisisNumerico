@@ -1,0 +1,212 @@
+unit main_NLE;
+
+{$mode objfpc}{$H+}
+
+interface
+
+uses
+  Classes, SysUtils, FileUtil, TAGraph, TAFuncSeries, TASeries, TATools, Forms, TAChartUtils,
+  Controls, Graphics, Dialogs, StdCtrls, Grids, nle_methods, Types, Integrals;
+
+type
+
+  { TGraph }
+
+  TGraph = class(TForm)
+    btnGraph: TButton;
+    btnCalculate: TButton;
+    btnGraph1: TButton;
+    btnIntegrate: TButton;
+    ChartToolset1: TChartToolset;
+    ChartToolset1DataPointClickTool1: TDataPointClickTool;
+    LabIntegral: TLabel;
+    TStringGrid1: TStringGrid;
+    btnIntersect: TButton;
+    btnCalculate1: TButton;
+    Chart1: TChart;
+    ediFunc1: TEdit;
+    Func2: TFuncSeries;
+    Chart1LineSeries1: TLineSeries;
+    cboMethods: TComboBox;
+    EdiA: TEdit;
+    EdiB: TEdit;
+    EdiError: TEdit;
+    Func1: TFuncSeries;
+    Label1: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    LabResult: TLabel;
+    LabIter: TLabel;
+    ediFunc: TEdit;
+    procedure btnCalculateClick(Sender: TObject);
+    procedure btnGraph1Click(Sender: TObject);
+    procedure btnGraphClick(Sender: TObject);
+    procedure btnIntegrateClick(Sender: TObject);
+    procedure btnIntersectClick(Sender: TObject);
+    procedure ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool;
+      APoint: TPoint);
+    procedure FormCreate(Sender: TObject);
+    procedure Func1Calculate(const AX: Double; out AY: Double);
+    procedure Func2Calculate(const AX: Double; out AY: Double);
+
+  private
+      Methods: TNLEMethods;
+      Integrals: TIntegralMethods;
+      clickFunc1: Boolean;
+      tempX: Real;
+
+  public
+
+  end;
+
+var
+  Graph: TGraph;
+
+implementation
+
+{$R *.lfm}
+
+{ TGraph }
+
+procedure TGraph.btnGraphClick(Sender: TObject);
+begin
+
+     Func1.Active:= False;
+     Func1.Pen.Color:= clBlue;
+     Func1.Active:= True;
+
+end;
+
+procedure TGraph.btnIntegrateClick(Sender: TObject);
+begin
+  Integrals := TIntegralMethods.create;
+  Integrals.a := StrToFloat(EdiA.Text);
+  Integrals.b := StrToFloat(EdiB.Text);
+  LabIntegral.Caption :=  FloatToStr(Integrals.Execute());
+end;
+
+procedure TGraph.btnIntersectClick(Sender: TObject);
+var
+  Res: Real;
+begin
+  Methods := TNLEMethods.create;
+  //cboMethods.ItemIndex:= 0;
+  Methods.a := StrToFloat(EdiA.Text);
+  Res := Methods.Intersection();
+  Chart1LineSeries1.ShowPoints:= True;
+  Chart1LineSeries1.AddXY(Res, Methods.f(Res));
+  LabResult.Caption := FloatToStr(Res);
+  LabIter.Caption:= IntToStr(Methods.nSequence.Count);
+
+  Methods.Destroy;
+end;
+
+procedure TGraph.ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool;
+  APoint: TPoint);
+var
+  x, y: Real;
+  newA, Res: Real;
+  pg: TDoublePoint;
+begin
+  pg := Chart1.ImageToGraph(APoint);
+  with ATool as TDataPointClickTool do
+    if (Series is TFuncSeries) then
+    begin
+//          with TFuncSeries(Series) do begin
+        x := pg.X;
+        y := pg.Y;
+//        ShowMessage('x: ' + FloatToStr(x) + ', y: ' + FloatToStr(y));
+        if (clickFunc1 = True) then
+        begin
+            Methods := TNLEMethods.create;
+            newA := (pg.X + tempX) / 2;
+            Methods.a := newA;
+            Res := Methods.Intersection();
+            Chart1LineSeries1.ShowPoints:= True;
+            Chart1LineSeries1.AddXY(Res, Methods.f(Res));
+            LabResult.Caption := FloatToStr(Res);
+            LabIter.Caption:= IntToStr(Methods.nSequence.Count);
+            Methods.Destroy;
+        end;
+        clickFunc1:= True;
+        tempX := x;
+    end;
+end;
+
+procedure TGraph.FormCreate(Sender: TObject);
+begin
+  Methods := TNLEMethods.create;
+  cboMethods.Items.Assign(Methods.MethodList);
+  cboMethods.ItemIndex:= 0;
+  Methods.error:= StrToFloat(EdiError.Text);
+end;
+
+procedure TGraph.btnCalculateClick(Sender: TObject);
+var //SL: TStringList;
+  Res: Real;
+begin
+     {SL := TStringList.Create;
+     SL.Add('3.14');
+     SL.Add('1.23');
+     SL.Add('1.2334');
+     TStringGrid1.Cols[ 1 ].Assign(SL); //how to fill a StringGrid with a TStringList}
+     Func2.Active:= False;
+     Methods := TNLEMethods.create;
+     Methods.a := StrToFloat(EdiA.Text);
+     Methods.b := StrToFloat(EdiB.Text);
+     Methods.error:= StrToFloat(EdiError.Text);
+     Methods.func := ediFunc.Text;
+     Methods.Method:= IntPtr( cboMethods.Items.Objects[cboMethods.ItemIndex]);
+     Res := Methods.Execute();
+     if ( ( (Methods.globalBolzano = True) and (Methods.Method <=1) ) or (Methods.Method > 1) ) then
+     begin
+         //TempResult.Text := FloatToStr(Res);
+         TStringGrid1.Cols[ 0 ].Assign(Methods.nSequence);
+         TStringGrid1.Cols[ 1 ].Assign(Methods.SolutionSequence);
+         TStringGrid1.Cols[ 2 ].Assign(Methods.ErrorSequence);
+         LabResult.Caption := FloatToStr(Res);
+         LabIter.Caption:= IntToStr(Methods.nSequence.Count);
+         Chart1LineSeries1.ShowPoints:= True;
+         if (Methods.Method = 4) then
+         begin
+             Func2.Active:= False;
+             Func2.Pen.Color:= clRed;
+             Func2.Active:= True;
+             Chart1LineSeries1.AddXY(Res, Res);
+         end else
+             Chart1LineSeries1.AddXY(Res, 0);
+     end else
+     begin
+       TStringGrid1.Cells[0,0] := 'No se';
+       TStringGrid1.Cells[1,0] := 'encontro';
+       TStringGrid1.Cells[2,0] := 'respuesta';
+       LabResult.Caption := '-';
+       LabIter.Caption:= '-';
+     end;
+     Methods.Destroy;
+end;
+
+procedure TGraph.btnGraph1Click(Sender: TObject);
+begin
+       Func2.Active:= False;
+       Func2.Pen.Color:= clRed;
+       Func2.Active:= True;
+end;
+
+procedure TGraph.Func1Calculate(const AX: Double; out AY: Double);
+begin
+  Methods := TNLEMethods.create;
+  AY := Methods.f( AX );
+  Methods.Destroy;
+end;
+
+procedure TGraph.Func2Calculate(const AX: Double; out AY: Double);
+begin
+  Methods := TNLEMethods.create;
+  AY := Methods.f2( AX );
+  Methods.Destroy;
+end;
+
+end.

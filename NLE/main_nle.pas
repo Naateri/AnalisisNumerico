@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, TAGraph, TAFuncSeries, TASeries, TATools, Forms, TAChartUtils,
-  Controls, Graphics, Dialogs, StdCtrls, Grids, nle_methods, Types;
+  Controls, Graphics, Dialogs, StdCtrls, Grids, nle_methods, Types, Integrals;
 
 type
 
@@ -16,8 +16,10 @@ type
     btnGraph: TButton;
     btnCalculate: TButton;
     btnGraph1: TButton;
+    btnIntegrate: TButton;
     ChartToolset1: TChartToolset;
     ChartToolset1DataPointClickTool1: TDataPointClickTool;
+    LabIntegral: TLabel;
     TStringGrid1: TStringGrid;
     btnIntersect: TButton;
     btnCalculate1: TButton;
@@ -41,6 +43,7 @@ type
     procedure btnCalculateClick(Sender: TObject);
     procedure btnGraph1Click(Sender: TObject);
     procedure btnGraphClick(Sender: TObject);
+    procedure btnIntegrateClick(Sender: TObject);
     procedure btnIntersectClick(Sender: TObject);
     procedure ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool;
       APoint: TPoint);
@@ -50,6 +53,7 @@ type
 
   private
       Methods: TNLEMethods;
+      Integrals: TIntegralMethods;
       clickFunc1: Boolean;
       tempX: Real;
 
@@ -73,6 +77,15 @@ begin
      Func1.Pen.Color:= clBlue;
      Func1.Active:= True;
 
+end;
+
+procedure TGraph.btnIntegrateClick(Sender: TObject);
+begin
+  Integrals := TIntegralMethods.create;
+  Integrals.a := StrToFloat(EdiA.Text);
+  Integrals.b := StrToFloat(EdiB.Text);
+  Integrals.h := 0.5;
+  LabIntegral.Caption :=  FloatToStr(Integrals.Execute());
 end;
 
 procedure TGraph.btnIntersectClick(Sender: TObject);

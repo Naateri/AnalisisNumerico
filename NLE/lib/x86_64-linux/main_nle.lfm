@@ -1,0 +1,243 @@
+object Graph: TGraph
+  Left = 325
+  Height = 611
+  Top = 101
+  Width = 1000
+  Caption = 'Graph'
+  ClientHeight = 611
+  ClientWidth = 1000
+  OnCreate = FormCreate
+  LCLVersion = '1.6.0.4'
+  object btnGraph: TButton
+    Left = 256
+    Height = 25
+    Top = 16
+    Width = 75
+    Caption = 'Graph'
+    OnClick = btnGraphClick
+    TabOrder = 0
+  end
+  object ediFunc: TEdit
+    Left = 16
+    Height = 27
+    Top = 16
+    Width = 144
+    TabOrder = 1
+    Text = 'ediFunc'
+  end
+  object Chart1: TChart
+    Left = 224
+    Height = 536
+    Top = 64
+    Width = 776
+    AxisList = <    
+      item
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+      end    
+      item
+        Alignment = calBottom
+        Minors = <>
+      end>
+    Extent.UseXMax = True
+    Extent.UseXMin = True
+    Extent.UseYMax = True
+    Extent.UseYMin = True
+    Extent.XMax = 10
+    Extent.XMin = -10
+    Extent.YMax = 10
+    Extent.YMin = -10
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Toolset = ChartToolset1
+    object Func1: TFuncSeries
+      Active = False
+      OnCalculate = Func1Calculate
+    end
+    object Chart1LineSeries1: TLineSeries
+    end
+    object Func2: TFuncSeries
+      Active = False
+      OnCalculate = Func2Calculate
+    end
+  end
+  object btnCalculate: TButton
+    Left = 168
+    Height = 25
+    Top = 16
+    Width = 75
+    Caption = 'Calculate'
+    OnClick = btnCalculateClick
+    TabOrder = 3
+  end
+  object Label1: TLabel
+    Left = 352
+    Height = 17
+    Top = 0
+    Width = 14
+    Caption = 'A:'
+    ParentColor = False
+  end
+  object EdiA: TEdit
+    Left = 352
+    Height = 27
+    Top = 16
+    Width = 32
+    TabOrder = 4
+    Text = '1.5'
+  end
+  object Label2: TLabel
+    Left = 392
+    Height = 17
+    Top = 0
+    Width = 14
+    Caption = 'B:'
+    ParentColor = False
+  end
+  object EdiB: TEdit
+    Left = 392
+    Height = 27
+    Top = 16
+    Width = 32
+    TabOrder = 5
+    Text = '2.5'
+  end
+  object Label3: TLabel
+    Left = 432
+    Height = 17
+    Top = 0
+    Width = 40
+    Caption = 'Error:'
+    ParentColor = False
+  end
+  object EdiError: TEdit
+    Left = 432
+    Height = 27
+    Top = 16
+    Width = 48
+    TabOrder = 6
+    Text = '0.0001'
+  end
+  object Label4: TLabel
+    Left = 9
+    Height = 17
+    Top = 558
+    Width = 73
+    Caption = 'Resultado:'
+    ParentColor = False
+  end
+  object LabResult: TLabel
+    Left = 72
+    Height = 17
+    Top = 558
+    Width = 4
+    Caption = '-'
+    ParentColor = False
+  end
+  object Label5: TLabel
+    Left = 9
+    Height = 17
+    Top = 576
+    Width = 80
+    Caption = 'Iteraciones:'
+    ParentColor = False
+  end
+  object LabIter: TLabel
+    Left = 80
+    Height = 17
+    Top = 576
+    Width = 4
+    Caption = '-'
+    ParentColor = False
+  end
+  object cboMethods: TComboBox
+    Left = 888
+    Height = 29
+    Top = 8
+    Width = 100
+    ItemHeight = 0
+    TabOrder = 7
+    Text = 'cboMethods'
+  end
+  object ediFunc1: TEdit
+    Left = 512
+    Height = 27
+    Top = 16
+    Width = 144
+    TabOrder = 8
+    Text = 'ediFunc1'
+  end
+  object btnIntersect: TButton
+    Left = 760
+    Height = 25
+    Top = 40
+    Width = 75
+    Caption = 'Intersection'
+    OnClick = btnIntersectClick
+    TabOrder = 9
+  end
+  object btnCalculate1: TButton
+    Left = 672
+    Height = 25
+    Top = 16
+    Width = 75
+    Caption = 'Calculate'
+    TabOrder = 10
+  end
+  object TStringGrid1: TStringGrid
+    Left = 0
+    Height = 472
+    Top = 72
+    Width = 208
+    AutoFillColumns = True
+    ColCount = 3
+    FixedCols = 0
+    FixedRows = 0
+    RowCount = 100
+    TabOrder = 11
+    ColWidths = (
+      63
+      63
+      64
+    )
+  end
+  object btnGraph1: TButton
+    Left = 760
+    Height = 25
+    Top = 14
+    Width = 75
+    Caption = 'Graph'
+    OnClick = btnGraph1Click
+    TabOrder = 12
+  end
+  object btnIntegrate: TButton
+    Left = 168
+    Height = 25
+    Top = 40
+    Width = 75
+    Caption = 'Integrate'
+    OnClick = btnIntegrateClick
+    TabOrder = 13
+  end
+  object LabIntegral: TLabel
+    Left = 256
+    Height = 17
+    Top = 48
+    Width = 86
+    Caption = 'Integ. Result'
+    ParentColor = False
+  end
+  object ChartToolset1: TChartToolset
+    left = 400
+    top = 400
+    object ChartToolset1DataPointClickTool1: TDataPointClickTool
+      Shift = [ssLeft]
+      OnPointClick = ChartToolset1DataPointClickTool1PointClick
+    end
+  end
+end
