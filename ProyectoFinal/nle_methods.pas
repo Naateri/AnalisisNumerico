@@ -19,7 +19,7 @@ type
       MethodList: TStringList;
       ErrorSequence: TStringList;
       SolutionSequence: TStringList;
-      func: String;
+      func, func2: String;
       Parse: TParseMath;
       function f(x: Real): Real;
       function f2(x: Real): Real;
@@ -93,7 +93,10 @@ end;
 
 function TNLEMethods.f2(x: Real): Real;
 begin
-     Result := power(x, 2) + 5;
+//     Result := power(x, 2) + 5;
+     Parse.Expression := func2;
+     Parse.NewValue('x', x);
+     Result := Parse.Evaluate();
 end;
 
 function TNLEMethods.fd(x: Real): Real;
@@ -341,7 +344,9 @@ var n: Integer = 0;
    h, fxn, fxnh: Real;
 begin
 //     Parse.Expression:= func;
-     h := error/10;
+     func := func + '- (' + func2 + ')';
+     Result := Bisection();
+{     h := error/10;
      xnn := a; //first xn
      newError := 10;
      //SolutionSequence.Add(FloatToStr(xnn));
@@ -367,7 +372,7 @@ begin
 
        n := n + 1;
      until ( (newError <= error) or (n > Top) );
-     Result := xnn;
+     Result := xnn;}
 end;
 
 end.

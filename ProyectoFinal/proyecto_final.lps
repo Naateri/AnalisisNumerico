@@ -3,7 +3,7 @@
   <ProjectSession>
     <Version Value="9"/>
     <BuildModes Active="Default"/>
-    <Units Count="4">
+    <Units Count="6">
       <Unit0>
         <Filename Value="proyecto_final.lpr"/>
         <IsPartOfProject Value="True"/>
@@ -11,7 +11,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="21"/>
+        <UsageCount Value="46"/>
       </Unit0>
       <Unit1>
         <Filename Value="final_project_main.pas"/>
@@ -20,85 +20,168 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="57"/>
-        <CursorPos X="79" Y="65"/>
-        <UsageCount Value="21"/>
+        <TopLine Value="84"/>
+        <CursorPos X="80" Y="98"/>
+        <UsageCount Value="46"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="nle_methods.pas"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="150"/>
-        <CursorPos X="43" Y="164"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="265"/>
+        <CursorPos X="28" Y="265"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
         <Filename Value="parsemath.pas"/>
         <UnitName Value="ParseMath"/>
-        <EditorIndex Value="2"/>
-        <UsageCount Value="10"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="53"/>
+        <CursorPos Y="57"/>
+        <UsageCount Value="23"/>
         <Loaded Value="True"/>
       </Unit3>
+      <Unit4>
+        <Filename Value="/usr/lib/lazarus/1.6/components/tachart/tatypes.pas"/>
+        <UnitName Value="TATypes"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="556"/>
+        <CursorPos X="16" Y="571"/>
+        <UsageCount Value="8"/>
+      </Unit4>
+      <Unit5>
+        <Filename Value="/usr/lib/lazarus/1.6/lcl/graphics.pp"/>
+        <UnitName Value="Graphics"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="2601"/>
+        <CursorPos Y="2612"/>
+        <UsageCount Value="10"/>
+        <Loaded Value="True"/>
+      </Unit5>
     </Units>
-    <JumpHistory Count="14" HistoryIndex="13">
+    <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="20" Column="17" TopLine="5"/>
+        <Caret Line="155" Column="52" TopLine="145"/>
       </Position1>
       <Position2>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="25" Column="17" TopLine="5"/>
+        <Caret Line="141" Column="19" TopLine="132"/>
       </Position2>
       <Position3>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="48" TopLine="27"/>
+        <Caret Line="190" Column="8" TopLine="181"/>
       </Position3>
       <Position4>
-        <Filename Value="final_project_main.pas"/>
-        <Caret Line="35" Column="14" TopLine="35"/>
+        <Filename Value="nle_methods.pas"/>
+        <Caret Line="97" TopLine="84"/>
       </Position4>
       <Position5>
-        <Filename Value="final_project_main.pas"/>
-        <Caret Line="49" Column="3" TopLine="43"/>
+        <Filename Value="nle_methods.pas"/>
+        <Caret Line="7" Column="39"/>
       </Position5>
       <Position6>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="54" TopLine="41"/>
+        <Caret Line="127" Column="26" TopLine="117"/>
       </Position6>
       <Position7>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="57" Column="2" TopLine="45"/>
+        <Caret Line="126" Column="26" TopLine="116"/>
       </Position7>
       <Position8>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="50" Column="9" TopLine="50"/>
+        <Caret Line="185" Column="26" TopLine="175"/>
       </Position8>
       <Position9>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="54" Column="22" TopLine="43"/>
+        <Caret Line="188" Column="46" TopLine="176"/>
       </Position9>
       <Position10>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="55" Column="9" TopLine="44"/>
+        <Caret Line="186" Column="37" TopLine="176"/>
       </Position10>
       <Position11>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="46" Column="4" TopLine="40"/>
+        <Caret Line="185" Column="27" TopLine="175"/>
       </Position11>
       <Position12>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="71" Column="13" TopLine="59"/>
+        <Caret Line="138" Column="29" TopLine="127"/>
       </Position12>
       <Position13>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="81" Column="72" TopLine="64"/>
+        <Caret Line="184" Column="87" TopLine="168"/>
       </Position13>
       <Position14>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="80" Column="54" TopLine="67"/>
+        <Caret Line="188" Column="56" TopLine="177"/>
       </Position14>
+      <Position15>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="184" Column="102" TopLine="174"/>
+      </Position15>
+      <Position16>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="106" Column="19" TopLine="98"/>
+      </Position16>
+      <Position17>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="101" Column="18" TopLine="99"/>
+      </Position17>
+      <Position18>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="109" Column="19" TopLine="107"/>
+      </Position18>
+      <Position19>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="119" Column="46" TopLine="106"/>
+      </Position19>
+      <Position20>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="118" Column="45" TopLine="108"/>
+      </Position20>
+      <Position21>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="97" Column="79" TopLine="84"/>
+      </Position21>
+      <Position22>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="118" Column="13" TopLine="108"/>
+      </Position22>
+      <Position23>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="112" Column="15" TopLine="108"/>
+      </Position23>
+      <Position24>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="107" Column="13" TopLine="105"/>
+      </Position24>
+      <Position25>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="132" Column="13" TopLine="114"/>
+      </Position25>
+      <Position26>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="221" Column="15" TopLine="215"/>
+      </Position26>
+      <Position27>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="122" Column="44" TopLine="111"/>
+      </Position27>
+      <Position28>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="65" Column="17" TopLine="52"/>
+      </Position28>
+      <Position29>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="146" Column="41" TopLine="146"/>
+      </Position29>
+      <Position30>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="98" Column="79" TopLine="83"/>
+      </Position30>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>
