@@ -18,7 +18,7 @@
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
         <TopLine Value="27"/>
-        <CursorPos X="28" Y="43"/>
+        <CursorPos X="38" Y="43"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -39,7 +39,7 @@
         <UsageCount Value="10"/>
       </Unit3>
     </Units>
-    <JumpHistory Count="9" HistoryIndex="8">
+    <JumpHistory Count="11" HistoryIndex="10">
       <Position1>
         <Filename Value="unit_main_integrals.pas"/>
         <Caret Line="20" Column="38" TopLine="5"/>
@@ -76,6 +76,14 @@
         <Filename Value="unit_main_integrals.pas"/>
         <Caret Line="44" Column="55" TopLine="27"/>
       </Position9>
+      <Position10>
+        <Filename Value="unit_main_integrals.pas"/>
+        <Caret Line="43" Column="28" TopLine="27"/>
+      </Position10>
+      <Position11>
+        <Filename Value="unit_main_integrals.pas"/>
+        <Caret Line="42" Column="33" TopLine="27"/>
+      </Position11>
     </JumpHistory>
   </ProjectSession>
 </CONFIG>

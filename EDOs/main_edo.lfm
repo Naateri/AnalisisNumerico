@@ -1,0 +1,57 @@
+object Form1: TForm1
+  Left = 319
+  Height = 439
+  Top = 169
+  Width = 844
+  Caption = 'Form1'
+  ClientHeight = 439
+  ClientWidth = 844
+  LCLVersion = '1.6.0.4'
+  object Chart1: TChart
+    Left = 0
+    Height = 439
+    Top = 0
+    Width = 432
+    AxisList = <    
+      item
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+      end    
+      item
+        Alignment = calBottom
+        Minors = <>
+      end>
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Align = alLeft
+  end
+  object ediX0: TEdit
+    Left = 616
+    Height = 27
+    Top = 24
+    Width = 80
+    TabOrder = 1
+    Text = 'ediX0'
+  end
+  object ediY0: TEdit
+    Left = 616
+    Height = 27
+    Top = 64
+    Width = 80
+    TabOrder = 2
+    Text = 'ediY0'
+  end
+  object labResult: TLabel
+    Left = 624
+    Height = 17
+    Top = 168
+    Width = 64
+    Caption = 'labResult'
+    ParentColor = False
+  end
+end

@@ -1,0 +1,66 @@
+object Form1: TForm1
+  Left = 431
+  Height = 557
+  Top = 153
+  Width = 904
+  Caption = 'Form1'
+  ClientHeight = 557
+  ClientWidth = 904
+  OnCreate = FormCreate
+  LCLVersion = '1.6.0.4'
+  object CmdBox1: TCmdBox
+    Left = 0
+    Height = 557
+    Top = 0
+    Width = 368
+    Align = alLeft
+    CaretColor = clWhite
+    CaretType = cartUser
+    CaretWidth = 1
+    CaretHeight = 14
+    CaretYShift = 3
+    OnInput = CmdBox1Input
+    LineCount = 1000
+    Font.Color = clSilver
+    Font.Height = -21
+    BackGroundColor = clBlack
+    TabWidth = 60
+    HistoryMax = 10
+    InputSelColor = clBlue
+    InputSelBackGround = clWhite
+    CaretInterval = 500
+    EscapeCodeType = esctCmdBox
+    GraphicalCharacterWidth = 10
+  end
+  object StringGrid1: TStringGrid
+    Left = 604
+    Height = 557
+    Top = 0
+    Width = 300
+    Align = alRight
+    TabOrder = 1
+  end
+  object Chart1: TChart
+    Left = 0
+    Height = 296
+    Top = 0
+    Width = 448
+    AxisList = <    
+      item
+        Minors = <>
+        Title.LabelFont.Orientation = 900
+      end    
+      item
+        Alignment = calBottom
+        Minors = <>
+      end>
+    Foot.Brush.Color = clBtnFace
+    Foot.Font.Color = clBlue
+    Title.Brush.Color = clBtnFace
+    Title.Font.Color = clBlue
+    Title.Text.Strings = (
+      'TAChart'
+    )
+    Visible = False
+  end
+end
