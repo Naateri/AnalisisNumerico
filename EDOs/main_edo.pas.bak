@@ -48,13 +48,14 @@ var
   i: Integer;
 begin
   edo_solver := TEdo.create();
+  Chart1LineSeries1.Clear
   edo_solver.x_0:= StrToFloat(ediX0.Text);
   edo_solver.y_0:= StrToFloat(ediY0.Text);
   edo_solver.a := StrToFloat(ediX0.Text);
   edo_solver.b:= StrToFloat(ediObj.Text);
   edo_solver.func_d:= (ediFunc_d.Text);
   Chart1LineSeries1.Active:= True;
-  labResult.Caption:= FloatToStr(edo_solver.euler());
+  labResult.Caption:= FloatToStr(edo_solver.heun());
   for i := 0 to Length(edo_solver.xn_s) - 1 do begin
     Chart1LineSeries1.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
   end;

@@ -6,7 +6,8 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, uCmdBox, TAGraph, TAFuncSeries, TASeries, Forms,
-  Controls, Graphics, Dialogs, Grids, nle_methods, ParseMath;
+  Controls, Graphics, Dialogs, Grids, StdCtrls, ExtCtrls, nle_methods, lagrange_pol,
+  ParseMath;
 
 type
 
@@ -18,6 +19,7 @@ type
     Chart1FuncSeries2: TFuncSeries;
     Chart1LineSeries1: TLineSeries;
     CmdBox1: TCmdBox;
+    Panel1: TPanel;
     StringGrid1: TStringGrid;
     procedure Chart1FuncSeries1Calculate(const AX: Double; out AY: Double);
     procedure Chart1FuncSeries2Calculate(const AX: Double; out AY: Double);
@@ -75,14 +77,22 @@ end;
 procedure TForm1.CmdBox1Input(ACmdBox: TCmdBox; Input: string);
 var
   my_list: TStringList;
-  func: String;
+  array_list: TStringList;
+  func, temp: String;
   iPos: Integer;
   root_finder: TNLEMethods;
   parser: TParseMath;
   h, res: Real;
   m_function: my_function;
   my_point: TPoint;
+  lagrange_solver: TLagrange;
+  pts: array of array of Real;
+
 begin
+  StringGrid1.Cells[0,0] := 'Name';
+  StringGrid1.Cells[1,0] := 'Value';
+  StringGrid1.Cells[2,0] := 'Type';
+
   my_list := TStringList.Create;
   Input := Trim(Input);
   iPos := Pos( '(', Input);
@@ -92,15 +102,39 @@ begin
   my_list.DelimitedText:= Copy( Input, iPos+1, Length(Input) - iPos - 1);
   h := 0.01;
 
+  StringGrid1.Cells[0,1] := 'h';
+  StringGrid1.Cells[1,1] := 'Real';
+  StringGrid1.Cells[2,1] := FloatToStr(h);
+
   //ShowMessage('funcion: ' + func);
 
 {  for iPos := 0 To my_list.Count - 1 do
       ShowMessage('Parametro: ' + IntToStr( iPos+1 ) + ': ' + my_list[iPos]); }
 
+      Chart1.Extent.UseYMax := False;
+      Chart1.Extent.UseYMin := False;
+
   case func of
-          'help()': ShowMessage('(visu)Algo.');
-          'exit()': begin
-            ShowMessage('Me voy,');
+          'help': ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding
+          + 'root(f;a;b;method;true/false): f es la función, a y b el intervalo, los métodos pueden ser: ' +
+           'Biseccion (0), Falsa Posicion (1), Secante (2). True (1) o False (0)' +
+            ' te dice si puedes hallar todas las raíces.'+ LineEnding
+            + 'plot2d(f;a;b;color): f es la funcion, [a,b] el intervalo donde será graficado,' +
+            ' color el color de la gráfica. (Ej: clBlue).' + LineEnding
+            + 'polyroot([1,3,4,2]): WIP.' + LineEnding
+            + 'polynomial([1,2,3];[3,-3,4]): devuelve una función dados unos puntos. ' +
+            'Primer array: valores en x. Segundo array: valores en y.' + LineEnding
+            + 'SENL: WIP' + LineEnding
+            + 'intersection(f,g,a,b,color1,color2): halla la intersección entre dos funciones. '
+            + 'f y g son funciones, a y b el intervalo donde va a hallar la o las intersecciones, '
+            + 'color1 y color2 son los colores de f y g respectivamente.' + LineEnding
+            + 'integral: WIP' + LineEnding
+            + 'area: WIP' + LineEnding
+            + 'area2: WIP' + LineEnding
+            + 'edo: WIP' + LineEnding
+            );
+          'exit': begin
+            ShowMessage('Me voy.');
             Application.Terminate;
           end;
           'root': begin
@@ -155,10 +189,69 @@ begin
 //            ShowMessage('Grafica. (f,a,b,color)'); SYNTAX
           end;
           'polyroot': begin
+            array_list := TStringList.Create;
+            temp := Trim(my_list[0]);
+            iPos := Pos( ']', temp);
+            array_list.Delimiter:= ',';
+            array_list.StrictDelimiter:= True;
+            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+            for iPos := 0 to array_list.Count - 1 do
+                ShowMessage('Valor: ' + array_list[iPos]);
+            //copy values to create the polynomial
             ShowMessage('polyroot([1,3,5,8]). Raices de un polinomio.');
           end;
           'polynomial': begin
-            ShowMessage('polynomial([1,3,5],[4,2,3]). LaGrange.');
+            lagrange_solver := TLagrange.create;
+            array_list := TStringList.Create;
+            temp := Trim(my_list[0]);
+            iPos := Pos( ']', temp);
+            array_list.Delimiter:= ',';
+            array_list.StrictDelimiter:= True;
+            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+            lagrange_solver.num_points:= array_list.Count;
+            SetLength(pts, lagrange_solver.num_points, 2);
+            array_list.Sort; //to get min and max
+
+            for iPos := 0 to array_list.Count - 1 do begin
+              pts[iPos][0] := StrToFloat(array_list[iPos]);
+              ShowMessage('Valor: ' + array_list[iPos]);
+            end;
+            //copy x values to Lagrange
+
+//            ShowMessage('polynomial([1,3,5],[4,2,3]). LaGrange.'); SYNTAX
+              array_list.Clear;
+            temp := Trim(my_list[1]);
+            iPos := Pos( ']', temp);
+            array_list.Delimiter:= ',';
+            array_list.StrictDelimiter:= True;
+            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+            array_list.Sort; //to get min and max
+
+            for iPos := 0 to array_list.Count - 1 do begin
+                ShowMessage('Valor: ' + array_list[iPos]);
+                pts[iPos][1] := StrToFloat(array_list[iPos]);
+            end;
+            //copy y values to Lagrange
+
+            array_list.Destroy;
+            lagrange_solver.points := pts;
+
+            current_func := lagrange_solver.find_text();
+            current_func2:= current_func;
+            Chart1.Extent.UseYMax := True;
+            Chart1.Extent.UseYMax := True;
+            Chart1.Extent.XMin := pts[0][0];
+            Chart1.Extent.XMax := pts[lagrange_solver.num_points-1][0];
+            Chart1.Extent.YMin := pts[0][1];
+            Chart1.Extent.YMax := pts[lagrange_solver.num_points-1][1];
+            Chart1FuncSeries1.Active:= False;
+            Chart1FuncSeries2.Active:= False;
+            Chart1FuncSeries1.Pen.Color:= clBlue;
+            Chart1FuncSeries1.Active:= True;
+
+            Chart1.Visible:= True;
+            Chart1.Proportional:= True;
+
           end;
           'SENL': begin
             ShowMessage('SENL([f1,f2,f3], [x0, x1, x2]). Newton Raphson generalizado.');

@@ -48,6 +48,7 @@ var
   i: Integer;
 begin
   edo_solver := TEdo.create();
+  Chart1LineSeries1.Clear;
   edo_solver.x_0:= StrToFloat(ediX0.Text);
   edo_solver.y_0:= StrToFloat(ediY0.Text);
   edo_solver.a := StrToFloat(ediX0.Text);

@@ -9,7 +9,7 @@
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="19" Y="10"/>
-        <UsageCount Value="26"/>
+        <UsageCount Value="59"/>
       </Unit0>
       <Unit1>
         <Filename Value="main_edo.pas"/>
@@ -17,20 +17,20 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="46"/>
-        <CursorPos X="35" Y="66"/>
-        <UsageCount Value="26"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="38"/>
+        <CursorPos X="27" Y="46"/>
+        <UsageCount Value="59"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit1>
       <Unit2>
         <Filename Value="edo.pas"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="88"/>
-        <CursorPos X="6" Y="92"/>
-        <UsageCount Value="26"/>
+        <CursorPos X="35" Y="98"/>
+        <UsageCount Value="59"/>
         <Loaded Value="True"/>
       </Unit2>
       <Unit3>
@@ -38,7 +38,7 @@
         <UnitName Value="ParseMath"/>
         <EditorIndex Value="2"/>
         <CursorPos X="15" Y="10"/>
-        <UsageCount Value="13"/>
+        <UsageCount Value="30"/>
         <Loaded Value="True"/>
       </Unit3>
     </Units>

@@ -1,77 +1,88 @@
 object Form1: TForm1
-  Left = 431
-  Height = 557
-  Top = 153
-  Width = 904
+  Left = 363
+  Height = 629
+  Top = 51
+  Width = 768
   Caption = 'Form1'
-  ClientHeight = 557
-  ClientWidth = 904
+  ClientHeight = 629
+  ClientWidth = 768
   OnCreate = FormCreate
   LCLVersion = '1.6.0.4'
-  object CmdBox1: TCmdBox
+  object Panel1: TPanel
     Left = 0
-    Height = 557
+    Height = 632
     Top = 0
-    Width = 368
-    Align = alLeft
-    CaretColor = clWhite
-    CaretType = cartUser
-    CaretWidth = 1
-    CaretHeight = 14
-    CaretYShift = 3
-    OnInput = CmdBox1Input
-    LineCount = 1000
-    Font.Color = clSilver
-    Font.Height = -21
-    BackGroundColor = clBlack
-    TabWidth = 60
-    HistoryMax = 10
-    InputSelColor = clBlue
-    InputSelBackGround = clWhite
-    CaretInterval = 500
-    EscapeCodeType = esctCmdBox
-    GraphicalCharacterWidth = 10
+    Width = 392
+    Caption = 'Panel1'
+    ClientHeight = 632
+    ClientWidth = 392
+    TabOrder = 0
+    object Chart1: TChart
+      Left = 1
+      Height = 376
+      Top = 1
+      Width = 390
+      AxisList = <      
+        item
+          Minors = <>
+          Title.LabelFont.Orientation = 900
+        end      
+        item
+          Alignment = calBottom
+          Minors = <>
+        end>
+      Foot.Brush.Color = clBtnFace
+      Foot.Font.Color = clBlue
+      Proportional = True
+      Title.Brush.Color = clBtnFace
+      Title.Font.Color = clBlue
+      Title.Text.Strings = (
+        'TAChart'
+      )
+      Align = alTop
+      Visible = False
+      object Chart1FuncSeries1: TFuncSeries
+        Active = False
+        OnCalculate = Chart1FuncSeries1Calculate
+      end
+      object Chart1FuncSeries2: TFuncSeries
+        OnCalculate = Chart1FuncSeries2Calculate
+      end
+      object Chart1LineSeries1: TLineSeries
+      end
+    end
+    object CmdBox1: TCmdBox
+      Left = 1
+      Height = 254
+      Top = 377
+      Width = 390
+      Align = alClient
+      CaretColor = clWhite
+      CaretType = cartUser
+      CaretWidth = 1
+      CaretHeight = 14
+      CaretYShift = 3
+      OnInput = CmdBox1Input
+      LineCount = 1000
+      Font.Color = clSilver
+      Font.Height = -21
+      BackGroundColor = clBlack
+      TabWidth = 60
+      HistoryMax = 10
+      InputSelColor = clBlue
+      InputSelBackGround = clWhite
+      CaretInterval = 500
+      EscapeCodeType = esctCmdBox
+      GraphicalCharacterWidth = 10
+    end
   end
   object StringGrid1: TStringGrid
-    Left = 604
-    Height = 557
+    Left = 388
+    Height = 629
     Top = 0
-    Width = 300
+    Width = 380
     Align = alRight
+    FixedCols = 0
     TabOrder = 1
-  end
-  object Chart1: TChart
-    Left = 0
-    Height = 296
-    Top = 0
-    Width = 608
-    AxisList = <    
-      item
-        Minors = <>
-        Title.LabelFont.Orientation = 900
-      end    
-      item
-        Alignment = calBottom
-        Minors = <>
-      end>
-    Foot.Brush.Color = clBtnFace
-    Foot.Font.Color = clBlue
-    Proportional = True
-    Title.Brush.Color = clBtnFace
-    Title.Font.Color = clBlue
-    Title.Text.Strings = (
-      'TAChart'
-    )
-    Align = alCustom
-    Visible = False
-    object Chart1FuncSeries1: TFuncSeries
-      Active = False
-      OnCalculate = Chart1FuncSeries1Calculate
-    end
-    object Chart1FuncSeries2: TFuncSeries
-      OnCalculate = Chart1FuncSeries2Calculate
-    end
-    object Chart1LineSeries1: TLineSeries
-    end
   end
 end

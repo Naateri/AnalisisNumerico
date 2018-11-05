@@ -17,9 +17,8 @@
         <ComponentName Value="Form1"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <TopLine Value="41"/>
-        <CursorPos X="31" Y="58"/>
+        <TopLine Value="46"/>
+        <CursorPos X="35" Y="66"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -27,9 +26,10 @@
       <Unit2>
         <Filename Value="edo.pas"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="82"/>
-        <CursorPos X="8" Y="83"/>
+        <TopLine Value="88"/>
+        <CursorPos X="6" Y="92"/>
         <UsageCount Value="26"/>
         <Loaded Value="True"/>
       </Unit2>
