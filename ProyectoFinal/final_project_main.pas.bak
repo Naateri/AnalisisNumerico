@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, FileUtil, uCmdBox, TAGraph, TAFuncSeries, TASeries, Forms,
-  Controls, Graphics, Dialogs, Grids, StdCtrls, ExtCtrls, nle_methods, lagrange_pol,
+  Controls, Graphics, Dialogs, Grids, StdCtrls, ExtCtrls, nle_methods, lagrange_pol, Integrals,
   ParseMath;
 
 type
@@ -19,13 +19,18 @@ type
     Chart1FuncSeries2: TFuncSeries;
     Chart1LineSeries1: TLineSeries;
     CmdBox1: TCmdBox;
+    memHistorial: TMemo;
     Panel1: TPanel;
+    Panel2: TPanel;
     StringGrid1: TStringGrid;
     procedure Chart1FuncSeries1Calculate(const AX: Double; out AY: Double);
     procedure Chart1FuncSeries2Calculate(const AX: Double; out AY: Double);
     procedure CmdBox1Input(ACmdBox: TCmdBox; Input: string);
     procedure FormCreate(Sender: TObject);
   private
+    h: Real;
+    values: array of Real;
+
     { private declarations }
   public
     { public declarations }
@@ -72,6 +77,18 @@ begin
   error := 0.01;
   decimal := 2;
   CmdBox1.StartRead(clWhite, clBlack, 'Numerico>', clWhite, clBlack);
+  StringGrid1.Cells[0,0] := 'Name';
+  StringGrid1.Cells[1,0] := 'Value';
+  StringGrid1.Cells[2,0] := 'Type';
+  SetLength(values, 100);
+  h := 0.01;
+  values[0] := h;
+
+  StringGrid1.Cells[0,1] := 'h';
+  StringGrid1.Cells[1,1] := 'Real';
+  StringGrid1.Cells[2,1] := FloatToStr(h);
+
+
 end;
 
 procedure TForm1.CmdBox1Input(ACmdBox: TCmdBox; Input: string);
@@ -79,20 +96,18 @@ var
   my_list: TStringList;
   array_list: TStringList;
   func, temp: String;
-  iPos: Integer;
+  iPos, i: Integer;
   root_finder: TNLEMethods;
   parser: TParseMath;
-  h, res: Real;
+  res: Real;
+  //values: array of Real;
   m_function: my_function;
   my_point: TPoint;
   lagrange_solver: TLagrange;
+  integral_solver: TIntegralMethods;
   pts: array of array of Real;
 
 begin
-  StringGrid1.Cells[0,0] := 'Name';
-  StringGrid1.Cells[0,1] := 'Value';
-  StringGrid1.Cells[0,2] := 'Type';
-
   my_list := TStringList.Create;
   Input := Trim(Input);
   iPos := Pos( '(', Input);
@@ -100,11 +115,8 @@ begin
   my_list.Delimiter:= ';';
   my_list.StrictDelimiter:= true;
   my_list.DelimitedText:= Copy( Input, iPos+1, Length(Input) - iPos - 1);
-  h := 0.01;
 
-  StringGrid1.Cells[1,0] := 'h';
-  StringGrid1.Cells[1,1] := 'Real';
-  StringGrid1.Cells[1,2] := FloatToStr(h);
+  h := values[0];
 
   //ShowMessage('funcion: ' + func);
 
@@ -115,7 +127,8 @@ begin
       Chart1.Extent.UseYMin := False;
 
   case func of
-          'help': ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding
+          'help': begin ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding +
+          'update(var_name, var_value): actualiza el valor de una variable' + LineEnding
           + 'root(f;a;b;method;true/false): f es la función, a y b el intervalo, los métodos pueden ser: ' +
            'Biseccion (0), Falsa Posicion (1), Secante (2). True (1) o False (0)' +
             ' te dice si puedes hallar todas las raíces.'+ LineEnding
@@ -128,15 +141,35 @@ begin
             + 'intersection(f,g,a,b,color1,color2): halla la intersección entre dos funciones. '
             + 'f y g son funciones, a y b el intervalo donde va a hallar la o las intersecciones, '
             + 'color1 y color2 son los colores de f y g respectivamente.' + LineEnding
-            + 'integral: WIP' + LineEnding
+            + 'integral(f,a,b,method): halla el valor de la integral de f en los intervalos a y b.'
+            + ' Method: 0 es trapecio, 1 es Simpson 1/3' + LineEnding
             + 'area: WIP' + LineEnding
             + 'area2: WIP' + LineEnding
             + 'edo: WIP' + LineEnding
             );
+            memHistorial.Text:= memHistorial.Text + func;
+          end;
           'exit': begin
             ShowMessage('Me voy.');
             Application.Terminate;
           end;
+
+          'update': begin
+            for i := 1 to StringGrid1.ColCount - 1 do begin
+              if ( StringGrid1.Cells[0,i] = my_list[0] ) then begin
+                iPos := i;
+                Break;
+              end;
+            end;
+            values[iPos-1] := StrToFloat(my_list[1]);
+
+            StringGrid1.Cells[2,i] := my_list[1];
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'variable ' + my_list[0] + ' actualizada con valor ' + my_list[1]
+            + LineEnding;
+
+          end;
+
           'root': begin
             current_func:= my_list[0];
             current_func2:= my_list[0];
@@ -166,6 +199,9 @@ begin
             Chart1LineSeries1.ShowPoints:= True;
             Chart1.Visible:= True;
             root_finder.Destroy;
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'Root: ' + FloatToStr( res ) + LineEnding;
+
           end;
           'plot2d': begin
 //            Chart1.ClearSeries;
@@ -186,6 +222,9 @@ begin
             Chart1.Proportional:= True;
 
             Chart1.Visible:= True;
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'funcion ' + current_func + ' graficada.' + LineEnding;
+
 //            ShowMessage('Grafica. (f,a,b,color)'); SYNTAX
           end;
           'polyroot': begin
@@ -199,6 +238,7 @@ begin
                 ShowMessage('Valor: ' + array_list[iPos]);
             //copy values to create the polynomial
             ShowMessage('polyroot([1,3,5,8]). Raices de un polinomio.');
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
           end;
           'polynomial': begin
             lagrange_solver := TLagrange.create;
@@ -210,7 +250,6 @@ begin
             array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
             lagrange_solver.num_points:= array_list.Count;
             SetLength(pts, lagrange_solver.num_points, 2);
-            array_list.Sort; //to get min and max
 
             for iPos := 0 to array_list.Count - 1 do begin
               pts[iPos][0] := StrToFloat(array_list[iPos]);
@@ -225,12 +264,12 @@ begin
             array_list.Delimiter:= ',';
             array_list.StrictDelimiter:= True;
             array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
-            array_list.Sort; //to get min and max
 
             for iPos := 0 to array_list.Count - 1 do begin
                 ShowMessage('Valor: ' + array_list[iPos]);
                 pts[iPos][1] := StrToFloat(array_list[iPos]);
             end;
+            array_list.Sort; //to get min and max
             //copy y values to Lagrange
 
             array_list.Destroy;
@@ -251,6 +290,9 @@ begin
 
             Chart1.Visible:= True;
             Chart1.Proportional:= True;
+
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
 
           end;
           'SENL': begin
@@ -289,11 +331,28 @@ begin
             Chart1LineSeries1.AddXY(res, root_finder.f2(res));
             Chart1LineSeries1.ShowPoints:= True;
             root_finder.Destroy;
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'Interseccion: ' + FloatToStr(res) + LineEnding;
 //            ShowMessage('intersection(f,g,a,b,colorf,colorg). Interseccion de dos funciones en un intervalo.' +
 //            ' Todos los puntos.'); SYNTAX
           end;
           'integral': begin
-            ShowMessage('integral(f,a,b,method)');
+            integral_solver := TIntegralMethods.create;
+            integral_solver.func:= my_list[0];
+            integral_solver.a := StrToFloat(my_list[1]);
+            integral_solver.b := StrToFloat(my_list[2]);
+            integral_solver.Method:= StrToInt(my_list[3]);
+
+            current_func:= my_list[0];
+            current_func2:= my_list[1];
+
+            res := integral_solver.Execute();
+
+            ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'Resultado Integral: ' + FloatToStr(res) + ' unidades.' + LineEnding;
+
+            //ShowMessage('integral(f,a,b,method)'); SYNTAX
           end;
           'area': begin
             ShowMessage('area(f,a,b,method): halla y grafica el área.');

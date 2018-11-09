@@ -15,8 +15,10 @@
         <Filename Value="unit_main_integrals.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="Form1"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <TopLine Value="27"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="26"/>
         <CursorPos X="22" Y="35"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
@@ -25,10 +27,9 @@
       <Unit2>
         <Filename Value="integrals.pas"/>
         <UnitName Value="Integrals"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
         <TopLine Value="85"/>
-        <CursorPos Y="92"/>
+        <CursorPos Y="94"/>
         <UsageCount Value="10"/>
         <Loaded Value="True"/>
       </Unit2>

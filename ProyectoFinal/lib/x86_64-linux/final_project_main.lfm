@@ -1,10 +1,10 @@
 object Form1: TForm1
-  Left = 363
-  Height = 629
-  Top = 51
+  Left = 348
+  Height = 633
+  Top = 58
   Width = 768
   Caption = 'Form1'
-  ClientHeight = 629
+  ClientHeight = 633
   ClientWidth = 768
   OnCreate = FormCreate
   LCLVersion = '1.6.0.4'
@@ -76,13 +76,34 @@ object Form1: TForm1
       GraphicalCharacterWidth = 10
     end
   end
-  object StringGrid1: TStringGrid
-    Left = 388
+  object Panel2: TPanel
+    Left = 392
     Height = 629
     Top = 0
-    Width = 380
-    Align = alRight
-    FixedCols = 0
+    Width = 376
+    Caption = 'Panel2'
+    ClientHeight = 629
+    ClientWidth = 376
     TabOrder = 1
+    object StringGrid1: TStringGrid
+      Left = 1
+      Height = 136
+      Top = 1
+      Width = 374
+      Align = alTop
+      FixedCols = 0
+      TabOrder = 0
+    end
+    object memHistorial: TMemo
+      Left = 1
+      Height = 226
+      Top = 402
+      Width = 374
+      Align = alBottom
+      Lines.Strings = (
+        'memHistorial'
+      )
+      TabOrder = 1
+    end
   end
 end
