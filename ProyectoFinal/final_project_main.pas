@@ -7,7 +7,7 @@ interface
 uses
   Classes, SysUtils, FileUtil, uCmdBox, TAGraph, TAFuncSeries, TASeries, Forms,
   Controls, Graphics, Dialogs, Grids, StdCtrls, ExtCtrls, nle_methods, lagrange_pol, Integrals,
-  ParseMath;
+  edo, MyMatrix, NonLinearSystem, ParseMath;
 
 type
 
@@ -18,6 +18,7 @@ type
     Chart1FuncSeries1: TFuncSeries;
     Chart1FuncSeries2: TFuncSeries;
     Chart1LineSeries1: TLineSeries;
+    edoPlotter: TLineSeries;
     CmdBox1: TCmdBox;
     memHistorial: TMemo;
     Panel1: TPanel;
@@ -106,6 +107,9 @@ var
   lagrange_solver: TLagrange;
   integral_solver: TIntegralMethods;
   pts: array of array of Real;
+  edo_solver: TEdo;
+  senl_final_result: MyMatrix.mat;
+  senl_solver: NLSystems;
 
 begin
   my_list := TStringList.Create;
@@ -117,6 +121,8 @@ begin
   my_list.DelimitedText:= Copy( Input, iPos+1, Length(Input) - iPos - 1);
 
   h := values[0];
+  current_func:= '0';
+  current_func2:= '0';
 
   //ShowMessage('funcion: ' + func);
 
@@ -125,6 +131,9 @@ begin
 
       Chart1.Extent.UseYMax := False;
       Chart1.Extent.UseYMin := False;
+
+      //edoPlotter.Clear;
+      edoPlotter.Active:= False;
 
   case func of
           'help': begin ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding +
@@ -298,6 +307,50 @@ begin
 
           end;
           'SENL': begin
+            senl_solver := NLSystems.create;
+            Chart1.Visible:= False;
+            array_list := TStringList.Create;
+            temp := Trim(my_list[0]);
+            iPos := Pos( ']', temp);
+            array_list.Delimiter:= ',';
+            array_list.StrictDelimiter:= True;
+            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+            senl_solver.num_equations:= array_list.Count;
+            SetLength(senl_solver.equations, 4);
+
+            for iPos := 0 to array_list.Count - 1 do begin
+              senl_solver.equations[iPos] := array_list[iPos];
+//              ShowMessage('Valor: ' + array_list[iPos]);
+            end;
+
+            for i := iPos + 1 to 3 do
+                senl_solver.equations[i] := 'x';
+
+              array_list.Clear;
+            temp := Trim(my_list[1]);
+            iPos := Pos( ']', temp);
+            array_list.Delimiter:= ',';
+            array_list.StrictDelimiter:= True;
+            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+            SetLength( senl_solver.starts, 4 );
+
+            for iPos := 0 to array_list.Count - 1 do begin
+                senl_solver.starts[iPos] := StrToFloat(array_list[iPos]);
+//                ShowMessage('Valor: ' + array_list[iPos]);
+            end;
+
+            senl_solver.ErrorAllowed:= h;
+
+            senl_final_result := senl_solver.NewtonRaphson();
+
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+
+            for i := 0 to senl_solver.num_equations - 1 do begin
+              memHistorial.Text:= memHistorial.Text + senl_solver.variables[i] + ': ' +
+              FloatToStr(senl_final_result[i,0]) + LineEnding;
+            end;
+
+
             ShowMessage('SENL([f1,f2,f3], [x0, x1, x2]). Newton Raphson generalizado.');
           end;
           'intersection': begin
@@ -363,7 +416,33 @@ begin
             ShowMessage('area2(f,g,a,b, method): halla y grafica el área entre 2 funciones');
           end;
           'edo': begin
-            ShowMessage('edo(df,x0,y0,method): plottea la funcion primitiva');
+            Chart1.Visible:= True;
+
+            edo_solver :=  TEdo.create();
+            edoPlotter.Clear;
+            edo_solver.func_d:= my_list[0];
+            edo_solver.a := StrToFloat(my_list[1]);
+            edo_solver.x_0 := StrToFloat(my_list[1]);
+            edo_solver.y_0:= StrToFloat(my_list[2]);
+            edo_solver.b := StrToFloat(my_list[3]);
+            edo_solver.method := StrToInt(my_list[4]);
+            res := edo_solver.Execute();
+
+            for i:= 0 to Length(edo_solver.xn_s) - 1 do begin
+              edoPlotter.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
+            end;
+
+            edoPlotter.Active:= True;
+
+            Chart1.Extent.XMin := edo_solver.a;
+            Chart1.Extent.XMax := edo_solver.b;
+
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'Resultado EDO: ' + FloatToStr(res) + '.' + LineEnding;
+
+            ShowMessage('edo(df,x0,y0,obj,method): plottea la funcion primitiva');
+
+            edo_solver.Destroy;
           end;
      end;
 //  Chart1FuncSeries1.Extent.UseXMin := False;

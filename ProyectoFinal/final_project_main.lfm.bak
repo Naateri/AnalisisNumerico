@@ -50,6 +50,9 @@ object Form1: TForm1
       end
       object Chart1LineSeries1: TLineSeries
       end
+      object edoPlotter: TLineSeries
+        Active = False
+      end
     end
     object CmdBox1: TCmdBox
       Left = 1

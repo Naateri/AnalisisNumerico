@@ -90,7 +90,8 @@ begin
      final_result := Solver.NewtonRaphson();
      EdiXVal.Text := FloatToStr(final_result[0,0]);
      EdiYVal.Text := FloatToStr(final_result[1,0]);
-     EdiZVal.Text := FloatToStr(final_result[2,0]);
+     if (Length(final_result) >= 2) then
+        EdiZVal.Text := FloatToStr(final_result[2,0]);
 //     EdiWVal.Text := FloatToStr(final_result[3,0]);
 //     Solver.Destroy;
 end;
