@@ -66,9 +66,9 @@ begin
      MethodList.AddObject('Newton', TObject (IsNewton) );
      MethodList.AddObject('Secante', TObject (IsSecant) );
      MethodList.AddObject('Punto Fijo', TObject (IsFixedPoint) );
-     Parse := TParseMath.create();
+{     Parse := TParseMath.create();
      Parse.AddVariable( 'x', 0);
-     Parse.Expression:= 'x';
+     Parse.Expression:= 'x'; }
 end;
 
 destructor TNLEMethods.Destroy;
@@ -77,7 +77,7 @@ begin
      SolutionSequence.Destroy;
      nSequence.Destroy;
      MethodList.Destroy;
-     Parse.destroy;
+//     Parse.destroy;
 end;
 
 function TNLEMethods.f(x: Real): Real;

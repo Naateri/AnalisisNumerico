@@ -54,7 +54,11 @@ end;
 
 function TIntegralMethods.f(x: Real): Real;
 begin
-     Result := power(x, 3); //for now
+     Parse.NewValue('x', x);
+     Parse.Expression:= ;
+     Result := Parse.Evaluate();
+
+//     Result := power(x, 3); //for now
 end;
 
 function TIntegralMethods.Trapecio(): Real;
@@ -99,7 +103,7 @@ end;
 function TIntegralMethods.Execute(): Real;
 begin
      if (Method = IsTrap) then
-        Result := Trapecio();
+        Result := Trapecio()
      else if (Method = IsSimpson_1_3) then
         Result := Simpson_1_3();
 //     Result := Trapecio();

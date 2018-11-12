@@ -39,16 +39,16 @@ const
 constructor TEdo.create();
 begin
      h := 0.2;
-     parser := TParseMath.create();
+{     parser := TParseMath.create();
      parser.AddVariable('x', 0);
      parser.AddVariable('y', 0);
-     parser.Expression:= 'x+y';
+     parser.Expression:= 'x+y'; }
 end;
 
 destructor TEdo.Destroy;
 begin
      h := 0;
-     parser.destroy;
+//     parser.destroy;
 end;
 
 function TEdo.fd(x:Real; y:Real):Real;

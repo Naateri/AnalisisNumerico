@@ -31,6 +31,8 @@ type
   private
     h: Real;
     values: array of Real;
+    names: array of String;
+    le_parser: TParseMath;
 
     { private declarations }
   public
@@ -74,6 +76,8 @@ begin
 end;
 
 procedure TForm1.FormCreate(Sender: TObject);
+var
+  i: Integer;
 begin
   error := 0.01;
   decimal := 2;
@@ -82,13 +86,24 @@ begin
   StringGrid1.Cells[1,0] := 'Value';
   StringGrid1.Cells[2,0] := 'Type';
   SetLength(values, 100);
+  SetLength(names, 100);
   h := 0.01;
   values[0] := h;
+  names[0] := 'h';
 
-  StringGrid1.Cells[0,1] := 'h';
+  le_parser := TParseMath.create();
+  le_parser.AddVariable('x',0);
+  le_parser.AddVariable('y', 0);
+  le_parser.AddVariable('z', 0);
+  le_parser.AddVariable('w', 0);
+  le_parser.AddVariable('h',0.01);
+
+  StringGrid1.Cells[0,1] := names[0];
   StringGrid1.Cells[1,1] := 'Real';
   StringGrid1.Cells[2,1] := FloatToStr(h);
 
+  for i := 1 to 99 do
+      names[i] := '';
 
 end;
 
@@ -173,8 +188,31 @@ begin
             values[iPos-1] := StrToFloat(my_list[1]);
 
             StringGrid1.Cells[2,i] := my_list[1];
+
+            le_parser.NewValue(my_list[0], values[iPos-1]);
+
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
             memHistorial.Text:= memHistorial.Text + 'variable ' + my_list[0] + ' actualizada con valor ' + my_list[1]
+            + LineEnding;
+
+          end;
+
+          'create': begin //create(name, value)
+            Chart1.Visible:= False;
+            iPos := 1;
+            while (names[iPos] <> '') do begin
+              iPos := iPos + 1;
+            end;
+
+            names[iPos] := my_list[0];
+            values[iPos] := StrToFloat(my_list[1]);
+            StringGrid1.Cells[0,iPos+1] := my_list[0];
+            StringGrid1.Cells[1,iPos+1] := 'Real';
+            StringGrid1.Cells[2,iPos+1] := my_list[1];
+
+            le_parser.AddVariable(names[iPos], values[iPos]);
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'Variable ' + my_list[0] + 'creada con valor ' + my_list[1] + '.'
             + LineEnding;
 
           end;
@@ -184,6 +222,7 @@ begin
             current_func2:= my_list[0];
 
             root_finder := TNLEMethods.create;
+            root_finder.Parse := le_parser;
             root_finder.func:= my_list[0];
 
             root_finder.a := StrToFloat(my_list[1]);
@@ -207,7 +246,7 @@ begin
             Chart1LineSeries1.AddXY(res, 0);
             Chart1LineSeries1.ShowPoints:= True;
             Chart1.Visible:= True;
-            root_finder.Destroy;
+            //root_finder.Destroy;
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
             memHistorial.Text:= memHistorial.Text + 'Root: ' + FloatToStr( res ) + LineEnding;
 
@@ -237,17 +276,43 @@ begin
 //            ShowMessage('Grafica. (f,a,b,color)'); SYNTAX
           end;
           'polyroot': begin
+            lagrange_solver := TLagrange.create;
             array_list := TStringList.Create;
             temp := Trim(my_list[0]);
             iPos := Pos( ']', temp);
             array_list.Delimiter:= ',';
             array_list.StrictDelimiter:= True;
             array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+            lagrange_solver.num_points:= array_list.Count;
+            SetLength(pts, lagrange_solver.num_points, 2);
+
             for iPos := 0 to array_list.Count - 1 do
+                pts[iPos][0] := StrToFloat(array_list[iPos]);
                 ShowMessage('Valor: ' + array_list[iPos]);
             //copy values to create the polynomial
-            ShowMessage('polyroot([1,3,5,8]). Raices de un polinomio.');
+
+            array_list.Destroy;
+            lagrange_solver.points := pts;
+
+            current_func := lagrange_solver.polyroot_text();
+            current_func2:= current_func;
+            Chart1.Extent.UseYMax := True;
+            Chart1.Extent.UseYMax := True;
+            Chart1.Extent.XMax := 10;
+            Chart1.Extent.XMin := -10;
+
+            Chart1FuncSeries1.Active:= False;
+            Chart1FuncSeries2.Active:= False;
+            Chart1FuncSeries1.Pen.Color:= clBlue;
+            Chart1FuncSeries1.Active:= True;
+
+            Chart1.Visible:= True;
+            Chart1.Proportional:= True;
+
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
+
+            ShowMessage('polyroot([1,3,5,8]). Raices de un polinomio.');
           end;
           'polynomial': begin
             lagrange_solver := TLagrange.create;
@@ -309,6 +374,7 @@ begin
           'SENL': begin
             senl_solver := NLSystems.create;
             Chart1.Visible:= False;
+            senl_solver.Parse := le_parser;
             array_list := TStringList.Create;
             temp := Trim(my_list[0]);
             iPos := Pos( ']', temp);
@@ -357,6 +423,7 @@ begin
 //            Chart1.ClearSeries;
             Chart1.Visible:= True;
             root_finder := TNLEMethods.create;
+            root_finder.Parse := le_parser;
             root_finder.func:= my_list[0];
             root_finder.func2:= my_list[1];
 
@@ -401,6 +468,8 @@ begin
             current_func:= my_list[0];
             current_func2:= my_list[1];
 
+            integral_solver.Parse := le_parser;
+
             res := integral_solver.Execute();
 
             ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
@@ -419,6 +488,7 @@ begin
             Chart1.Visible:= True;
 
             edo_solver :=  TEdo.create();
+            edo_solver.parser := le_parser;
             edoPlotter.Clear;
             edo_solver.func_d:= my_list[0];
             edo_solver.a := StrToFloat(my_list[1]);
@@ -458,13 +528,13 @@ var
   m_parser: TParseMath;
 begin
   //ShowMessage('current func: ' + current_func);
-  m_function := my_function.Create;
-  m_parser := TParseMath.create();
-  m_parser.Expression:= current_func;
-  m_parser.AddVariable('x', AX);
-  m_function.func := current_func;
+//  m_function := my_function.Create;
+//  m_parser := TParseMath.create();
+  le_parser.Expression:= current_func;
+  le_parser.NewValue('x', AX);
+  //m_function.func := current_func;
   //AY := m_function.f(AX);
-  AY := m_parser.Evaluate();
+  AY := le_parser.Evaluate();
   //AY := AX;
 
 end;
@@ -473,13 +543,17 @@ procedure TForm1.Chart1FuncSeries2Calculate(const AX: Double; out AY: Double);
 var
   m_function: my_function;
 begin
-  m_function := my_function.Create;
+  {m_function := my_function.Create;
   m_function.func := current_func2;
-  AY := m_function.f(AX);
+  AY := m_function.f(AX);}
+
+  le_parser.NewValue('x', AX);
+  le_parser.Expression:= current_func2;
+
+  //AY := m_function.f(AX);
+  AY := le_parser.Evaluate();
 
 end;
-
-
 
 end.
 

@@ -54,7 +54,11 @@ end;
 
 function TIntegralMethods.f(x: Real): Real;
 begin
-     Result := power(x, 3); //for now
+     Parse.NewValue('x', x);
+     Parse.Expression:= func;
+     Result := Parse.Evaluate();
+
+//     Result := power(x, 3); //for now
 end;
 
 function TIntegralMethods.Trapecio(): Real;

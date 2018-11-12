@@ -45,14 +45,14 @@ begin
   SequenceX := TStringList.Create;
   SequenceY := TStringList.Create;
   ErrorSeq := TStringList.Create;
-  Parse := TParseMath.create();
   Matrices := MMatrix.create;
-  Parse.AddVariable('x', 0);
+  Parse := TParseMath.create();
+  {Parse.AddVariable('x', 0);
   Parse.AddVariable('y', 0);
   Parse.AddVariable('z', 0);
   Parse.AddVariable('w', 0);
   Parse.AddVariable('e', 2.71828183);
-  Parse.AddVariable('t', 4.71828183);
+  Parse.AddVariable('t', 4.71828183);}
   Matrices.rm1 := 4;
   Matrices.cm1 := 4;
 
@@ -115,10 +115,15 @@ begin
      variables[2] := 'z';
      variables[3] := 'w';
 
-     solutions[0] := start_x;
+{     solutions[0] := start_x;
      solutions[1] := start_y;
      solutions[2] := start_z;
-     solutions[3] := start_w;
+     solutions[3] := start_w;}
+
+     solutions[0] := starts[0];
+     solutions[1] := starts[1];
+     solutions[2] := starts[2];
+     solutions[3] := starts[3];
 
      for i := 0 to num_equations - 1 do
          xn[i][0] := solutions[i];

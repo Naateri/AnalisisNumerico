@@ -24,10 +24,10 @@ type
     start_x, start_y, start_z, start_w: Real;
     starts: array of Real;
     tempParse: TParseMath;
+    Parse: TParseMath;
     function NewtonRaphson(): mat;
     private
       Error: Real;
-      Parse: TParseMath;
       Matrices: MMatrix;
   public
   constructor create;
@@ -45,14 +45,14 @@ begin
   SequenceX := TStringList.Create;
   SequenceY := TStringList.Create;
   ErrorSeq := TStringList.Create;
-  Parse := TParseMath.create();
   Matrices := MMatrix.create;
-  Parse.AddVariable('x', 0);
+  Parse := TParseMath.create();
+  {Parse.AddVariable('x', 0);
   Parse.AddVariable('y', 0);
   Parse.AddVariable('z', 0);
   Parse.AddVariable('w', 0);
   Parse.AddVariable('e', 2.71828183);
-  Parse.AddVariable('t', 4.71828183);
+  Parse.AddVariable('t', 4.71828183);}
   Matrices.rm1 := 4;
   Matrices.cm1 := 4;
 

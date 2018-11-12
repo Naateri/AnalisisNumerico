@@ -39,10 +39,10 @@ const
 constructor TEdo.create();
 begin
      h := 0.2;
-     parser := TParseMath.create();
+{     parser := TParseMath.create();
      parser.AddVariable('x', 0);
      parser.AddVariable('y', 0);
-     parser.Expression:= 'x+y';
+     parser.Expression:= 'x+y'; }
 end;
 
 destructor TEdo.Destroy;
@@ -115,7 +115,11 @@ end;
 function TEdo.Execute(): Real;
 begin
      if (method = isEuler) then
-        Result :=
+        Result := euler()
+     else if (method = isHeun) then
+        Result := heun()
+     else if (method = isDormandPrince) then
+        Result := 0;
 end;
 
 end.
