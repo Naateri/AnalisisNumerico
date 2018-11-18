@@ -108,8 +108,8 @@ begin
      begin
        temp := 1;
        temp_polyroot := '(x - ' + FloatToStr(points[i][1]) + ')';
-       temp_polyroot := FloatToStr(points[i][1]) + '*' + temp_polyroot;
-       polyroot := temp_polyroot + '+' + polyroot;
+       temp_polyroot := temp_polyroot + '*';
+       polyroot := polyroot + temp_polyroot;
      end;
 //     ShowMessage('answer: ' + FloatToStr(answer));
        real_polyroot:= Copy(polyroot, 0, Length(polyroot) - 1);

@@ -107,9 +107,9 @@ begin
      for i := 0 to num_points-1 do
      begin
        temp := 1;
-       temp_polyroot := '(x - ' + FloatToStr(points[i][1]) + ')';
+       temp_polyroot := '(x - ' + FloatToStr(points[i][0]) + ')';
        temp_polyroot := temp_polyroot + '*';
-       polyroot := temp_polyroot + '+' + polyroot;
+       polyroot := polyroot + temp_polyroot;
      end;
 //     ShowMessage('answer: ' + FloatToStr(answer));
        real_polyroot:= Copy(polyroot, 0, Length(polyroot) - 1);

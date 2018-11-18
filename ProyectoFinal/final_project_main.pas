@@ -2,10 +2,56 @@ unit final_project_main;
 
 {$mode objfpc}{$H+}
 
+{
+los strings siempre van entre comillas
+-root(f,a,b,bool,n): o root(f,a,b,bool) o root(f,a,b,bool,n). n es el metodo.
+bool = true, todas las raíces, false, solo una raíz
+-intersection(f,g,a,b,color_f,color_g): todos los puntos de interseccion entre
+f y g en [a,b]
+-plot2d(f,a,b,color_f): grafica.
+-plot2d(g,a',b',color_g): grafica la otra funcion por encima.
+Si hace click en f y g, halla todas las intersecciones del intervalo.
+si a != a' y b != b' entonces para las intersecciones toma [a',b']
+Pueden haber n funciones.		
+-polyroot([3,2,5]). Pasas las raíces del polinomio, halla el polinomio. No grafica.
+Devuelve un string. Se puede asignar a una variable. Podemos graficar despues.
+-polynomial([valores en x], [valores en y]): si mandas diferente cantidad de valores,
+deberia mandar un error. Devuelve un polinomio que se debería poder pasar a 
+una variable, ejemplo: f = polynomial([1,2],[3,5]). Maximo 6 elementos.
+-senl(['x','y'],[f1,f2],[x_0,y_0]): [nombres_variables],[funciones],[valores_iniciales]
+Si no encuentra raices: mensaje diciendo que no se encontro una raiz.
+-integral(f,a,b,method=1): grafica la region sombreada, NO necesariamente el area.
+Devuelve un numero.
+0: trapecio
+1: simpson1/3
+2: simpson3/8
+-area(f,g,a,b,method=1): grafica f y g, ubica la region entre ambas funciones.
+para hallar el area: h = f-(g)
+f = clblue, g = clred
+cada f_i en la sumatoria debe estar en valor absoluto. NO es el valor absoluto de la respuesta.
+Ambos (area, integral) grafican.
+-edo(df,x_0,y_0,x_n,method=0):
+si x_n > x_0: el h resta, no aumenta.
+tip:
+var signo
+signo = sign(x_n-x_0)
+signo = signo * h
+metodos: 0->euler, 1->heun, 2->rk4, 3->dormand-prince
+Respuesta numérica (y_n), grafica la funcion 'original'
+
+clearplot: limpia las funciones
+eval(f): el parser evalua la funcion f con los valores ya guardados antes.
+variables por defecto:
+decimal = 2
+error = 0.01
+
+-opcional: ecuaciones diferenciales parciales, SEDO con runge kutta. No se grafica. Metodo adaptativo.
+}
+
 interface
 
 uses
-  Classes, SysUtils, FileUtil, uCmdBox, TAGraph, TAFuncSeries, TASeries, Forms,
+  Classes, SysUtils, FileUtil, uCmdBox, TAGraph, TAFuncSeries, TASeries, Forms, math,
   Controls, Graphics, Dialogs, Grids, StdCtrls, ExtCtrls, nle_methods, lagrange_pol, Integrals,
   edo, MyMatrix, NonLinearSystem, ParseMath;
 
@@ -33,10 +79,13 @@ type
     values: array of Real;
     names: array of String;
     le_parser: TParseMath;
+    functions: TList;
 
     { private declarations }
   public
     { public declarations }
+    LineSeries: TLineSeries;
+    le_area: TAreaSeries;
   end;
 
   my_function = class
@@ -116,9 +165,10 @@ var
   root_finder: TNLEMethods;
   parser: TParseMath;
   res: Real;
+  xmin, xmax, x: Real;
   //values: array of Real;
   m_function: my_function;
-  my_point: TPoint;
+//  my_point: TPoint;
   lagrange_solver: TLagrange;
   integral_solver: TIntegralMethods;
   pts: array of array of Real;
@@ -148,7 +198,13 @@ begin
       Chart1.Extent.UseYMin := False;
 
       //edoPlotter.Clear;
+
       edoPlotter.Active:= False;
+
+      Chart1.Extent.UseXMin := True;
+      Chart1.Extent.UseXMax := True;
+      Chart1.Extent.XMax := 10;
+      Chart1.Extent.XMin := -10;
 
   case func of
           'help': begin ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding +
@@ -238,7 +294,8 @@ begin
             Chart1FuncSeries2.Active:= False;
 
             res := root_finder.Execute();
-            //ShowMessage('root(f,a,b,method,true/false). Biseccion, Falsa Posicion, Secante.'); SYNTAX
+            //ShowMessage('root(f,a,b,bool,method=1). Biseccion, Falsa Posicion, Secante.'); SYNTAX
+	    //o es: root(f,a,b,bool) o root(f,a,b,bool,method)
             ShowMessage('Root: ' + FloatToStr( res ) );
             {my_point.X:= res;
             my_point.Y:= 0;}
@@ -253,25 +310,55 @@ begin
           end;
           'plot2d': begin
 //            Chart1.ClearSeries;
-            parser := TParseMath.create();
+            {parser := TParseMath.create();
             parser.AddVariable( 'x', 0);
-            parser.Expression:= my_list[0];
+            parser.Expression:= my_list[0];}
             current_func:= my_list[0];
-            current_func2:= my_list[0];
+            //current_func2:= my_list[0];
+            le_parser.Expression:= current_func;
+            LineSeries := TLineseries.Create( Chart1 );
+//            ShowMessage('wtf?');
+            xmin:= StrToFloat(my_list[1]);
+            xmax := StrToFloat(my_list[2]);
+            x := xmin;
 
-            Chart1.Extent.UseXMin := True;
-            Chart1.Extent.UseXMax := True;
+            with LineSeries do begin
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+
             Chart1.Extent.XMin := StrToFloat(my_list[1]);
             Chart1.Extent.XMax := StrToFloat(my_list[2]);
-            Chart1FuncSeries2.Active:= False;
+{            Chart1FuncSeries2.Active:= False;
             Chart1FuncSeries1.Active:= False;
             Chart1FuncSeries1.Pen.Color := StringToColor(my_list[3]);
-            Chart1FuncSeries1.Active:= True;
-            Chart1.Proportional:= True;
+            Chart1FuncSeries1.Active:= True;}
+
+{            TLineSeries(functions[functions.Count - 1]).ShowLines:= True;
+            TLineSeries(functions[functions.Count - 1]).LinePen.Color:= StringToColor(my_list[3]);
+            TLineSeries(functions[functions.Count - 1]).Active:= True; }
+
+            LineSeries.ShowLines:= True;
+            LineSeries.LinePen.Color:= StringToColor(my_list[3]);
+            LineSeries.Active:= True;
+
+            Chart1.AddSeries( LineSeries );
+
+            Chart1.Proportional:= False;
 
             Chart1.Visible:= True;
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'funcion ' + current_func + ' graficada.' + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'funcion ' + current_func + ' graficada ' +
+            'de ' + my_list[1] + ' a ' + my_list[2] + LineEnding;
+
+//            functions.Add( LineSeries );
 
 //            ShowMessage('Grafica. (f,a,b,color)'); SYNTAX
           end;
@@ -301,13 +388,14 @@ begin
             Chart1.Extent.XMax := 10;
             Chart1.Extent.XMin := -10;
 
-            Chart1FuncSeries1.Active:= False;
+{            Chart1FuncSeries1.Active:= False;
             Chart1FuncSeries2.Active:= False;
             Chart1FuncSeries1.Pen.Color:= clBlue;
-            Chart1FuncSeries1.Active:= True;
+            Chart1FuncSeries1.Active:= True; }
 
-            Chart1.Visible:= True;
+//            Chart1.Visible:= True;
             Chart1.Proportional:= True;
+            Chart1.Visible:= False;
 
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
             memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
@@ -470,7 +558,54 @@ begin
 
             integral_solver.Parse := le_parser;
 
+            le_parser.Expression:= my_list[0];
+
             res := integral_solver.Execute();
+
+            xmin:= integral_solver.a;
+            xmax:= integral_solver.b;
+
+            LineSeries := TLineseries.Create( Chart1 );
+            le_area := TAreaSeries.Create(Chart1);
+            x := xmin;
+
+            le_area.UseZeroLevel:= True;
+            le_area.AreaBrush.Color:= clGreen;
+            le_area.AreaContourPen.Color:= clRed;
+            le_area.AreaContourPen.Style:= psDot;
+            le_area.AreaContourPen.Width:= 3;
+            le_area.AreaLinesPen.Style:= psClear;
+
+            with LineSeries do begin
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+                       le_area.AddXY(x, le_parser.Evaluate());
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+
+            Chart1.Extent.XMin := StrToFloat(my_list[1]);
+            Chart1.Extent.XMax := StrToFloat(my_list[2]);
+
+            le_area.Active:= True;
+
+            LineSeries.ShowLines:= True;
+            LineSeries.LinePen.Color:= clRed;
+            LineSeries.Active:= True;
+
+            Chart1.AddSeries( LineSeries );
+            Chart1.AddSeries( le_area );
+
+            Chart1.Proportional:= False;
+
+            Chart1.Visible:= True;
+
+//            functions.Add(LineSeries);
 
             ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
@@ -479,10 +614,93 @@ begin
             //ShowMessage('integral(f,a,b,method)'); SYNTAX
           end;
           'area': begin
-            ShowMessage('area(f,a,b,method): halla y grafica el área.');
-          end;
-          'area2': begin
-            ShowMessage('area2(f,g,a,b, method): halla y grafica el área entre 2 funciones');
+            ShowMessage('area(f,g,a,b,method=1): halla y grafica el área. f = blue, g = red');
+            integral_solver := TIntegralMethods.create;
+            integral_solver.func:= my_list[0] + ' - (' + my_list[1] + ')';
+            integral_solver.a := StrToFloat(my_list[2]);
+            integral_solver.b := StrToFloat(my_list[3]);
+            integral_solver.Method:= StrToInt(my_list[4]);
+            integral_solver.area:= True;
+
+            current_func:= my_list[0];
+            current_func2:= my_list[1];
+
+            integral_solver.Parse := le_parser;
+
+            res := integral_solver.Execute();
+
+            xmin:= integral_solver.a;
+            xmax:= integral_solver.b;
+
+            le_area := TAreaSeries.Create(Chart1);
+
+            //function f
+            x := xmin;
+            LineSeries := TLineseries.Create( Chart1 );
+
+            le_parser.Expression:= my_list[0];
+
+            with LineSeries do begin
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+                       //le_area.AddXY(x, le_parser.Evaluate());
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+
+//            le_area.Active:= True;
+
+            LineSeries.ShowLines:= True;
+            LineSeries.LinePen.Color:= clBlue;
+            LineSeries.Active:= True;
+
+            Chart1.AddSeries( LineSeries );
+
+            //function g
+
+            x := xmin;
+            LineSeries := TLineseries.Create( Chart1 );
+
+            le_parser.Expression:= my_list[1];
+
+            with LineSeries do begin
+                 ShowLines:= True;
+                 LinePen.Color:= clRed;
+                 Active:= True;
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+                       //le_area.AddXY(x, le_parser.Evaluate());
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+
+            Chart1.AddSeries(LineSeries);
+
+//            Chart1.AddSeries( le_area );
+
+            Chart1.Proportional:= False;
+            Chart1.Extent.XMin := StrToFloat(my_list[2]);
+            Chart1.Extent.XMax := StrToFloat(my_list[3]);
+
+            Chart1.Visible:= True;
+
+//            functions.Add(LineSeries);
+
+            ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'Resultado Integral: ' + FloatToStr(res) + ' unidades.' + LineEnding;
+
+
           end;
           'edo': begin
             Chart1.Visible:= True;
@@ -504,8 +722,13 @@ begin
 
             edoPlotter.Active:= True;
 
-            Chart1.Extent.XMin := edo_solver.a;
-            Chart1.Extent.XMax := edo_solver.b;
+            if (edo_solver.a > edo_solver.b) then begin
+                Chart1.Extent.XMin := edo_solver.b;
+                Chart1.Extent.XMax := edo_solver.a;
+            end else begin
+              Chart1.Extent.XMin := edo_solver.a;
+              Chart1.Extent.XMax := edo_solver.b;
+            end;
 
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
             memHistorial.Text:= memHistorial.Text + 'Resultado EDO: ' + FloatToStr(res) + '.' + LineEnding;
@@ -530,12 +753,13 @@ begin
   //ShowMessage('current func: ' + current_func);
 //  m_function := my_function.Create;
 //  m_parser := TParseMath.create();
-  le_parser.Expression:= current_func;
+{  le_parser.Expression:= current_func;
   le_parser.NewValue('x', AX);
   //m_function.func := current_func;
   //AY := m_function.f(AX);
   AY := le_parser.Evaluate();
-  //AY := AX;
+  //AY := AX; }
+  AY := 0;
 
 end;
 
@@ -547,11 +771,12 @@ begin
   m_function.func := current_func2;
   AY := m_function.f(AX);}
 
-  le_parser.NewValue('x', AX);
+{  le_parser.NewValue('x', AX);
   le_parser.Expression:= current_func2;
 
   //AY := m_function.f(AX);
-  AY := le_parser.Evaluate();
+  AY := le_parser.Evaluate();}
+  AY := 0;
 
 end;
 
