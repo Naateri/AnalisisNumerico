@@ -275,7 +275,7 @@ begin
 
           'root': begin
             current_func:= my_list[0];
-            current_func2:= my_list[0];
+//            current_func2:= my_list[0];
 
             root_finder := TNLEMethods.create;
             root_finder.Parse := le_parser;
@@ -284,28 +284,62 @@ begin
             root_finder.a := StrToFloat(my_list[1]);
             root_finder.b:= StrToFloat(my_list[2]);
             root_finder.ErrorAllowed:= h;
-            root_finder.Method:= StrToInt(my_list[3]);
-            Chart1.Extent.UseXMin := False;
+            root_finder.Method:= StrToInt(my_list[4]);
+            if (my_list[3] = 'True') or (my_list[3] = 'true') then begin
+                root_finder.Method:= 3;
+            end;
+            {Chart1.Extent.UseXMin := False;
             Chart1.Extent.UseXMax := False;
             Chart1FuncSeries1.Active:= False;
             Chart1FuncSeries1.Pen.Color := clBlack;
             Chart1FuncSeries1.Active:= True;
             Chart1.Proportional:= True;
-            Chart1FuncSeries2.Active:= False;
+            Chart1FuncSeries2.Active:= False;}
 
             res := root_finder.Execute();
             //ShowMessage('root(f,a,b,bool,method=1). Biseccion, Falsa Posicion, Secante.'); SYNTAX
 	    //o es: root(f,a,b,bool) o root(f,a,b,bool,method)
             ShowMessage('Root: ' + FloatToStr( res ) );
-            {my_point.X:= res;
-            my_point.Y:= 0;}
 
-            Chart1LineSeries1.AddXY(res, 0);
+            LineSeries := TLineseries.Create( Chart1 );
+            xmin:= StrToFloat(my_list[1]);
+            xmax := StrToFloat(my_list[2]);
+            x := xmin;
+
+            with LineSeries do begin
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+
+            Chart1.Extent.XMin := StrToFloat(my_list[1]);
+            Chart1.Extent.XMax := StrToFloat(my_list[2]);
+            LineSeries.ShowLines:= True;
+            LineSeries.LinePen.Color:= clBlue;
+            LineSeries.Active:= True;
+
+            Chart1.AddSeries( LineSeries );
+
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            if (my_list[3] = 'True') or (my_list[3] = 'true') then begin
+               for i := 0 to root_finder.results_size - 1 do begin
+                 Chart1LineSeries1.AddXY(root_finder.results[i], 0);
+                 memHistorial.Text:= memHistorial.Text + 'Roots: ' + FloatToStr( root_finder.results[i] ) + ', ';
+               end;
+               memHistorial.Text:= memHistorial.Text + LineEnding;
+            end else begin
+                Chart1LineSeries1.AddXY(res, 0);
+                memHistorial.Text:= memHistorial.Text + 'Root: ' + FloatToStr( res ) + LineEnding;
+            end;
             Chart1LineSeries1.ShowPoints:= True;
             Chart1.Visible:= True;
             //root_finder.Destroy;
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Root: ' + FloatToStr( res ) + LineEnding;
 
           end;
           'plot2d': begin
@@ -317,7 +351,6 @@ begin
             //current_func2:= my_list[0];
             le_parser.Expression:= current_func;
             LineSeries := TLineseries.Create( Chart1 );
-//            ShowMessage('wtf?');
             xmin:= StrToFloat(my_list[1]);
             xmax := StrToFloat(my_list[2]);
             x := xmin;
@@ -521,7 +554,7 @@ begin
             root_finder.a := StrToFloat(my_list[2]);
             root_finder.b:= StrToFloat(my_list[3]);
             root_finder.ErrorAllowed:= h;
-            Chart1.Extent.UseXMin := True;
+            {Chart1.Extent.UseXMin := True;
             Chart1.Extent.UseXMax := True;
             Chart1.Extent.XMin := root_finder.a;
             Chart1.Extent.XMax := root_finder.b;
@@ -531,18 +564,81 @@ begin
             Chart1FuncSeries2.Active:= False;
             Chart1FuncSeries2.Pen.Color:= StringToColor(my_list[5]);
             Chart1FuncSeries2.Active := True;
-            Chart1.Proportional:= True;
+            Chart1.Proportional:= True;}
 
             res := root_finder.Intersection();
             ShowMessage('Intersection: (' + FloatToStr(res) + ', ' + FloatToStr( root_finder.f2(res)) + ')' );
             {my_point.X:= res;
             my_point.Y:= root_finder.f(res);}
 
-            Chart1LineSeries1.AddXY(res, root_finder.f2(res));
+            LineSeries := TLineseries.Create( Chart1 );
+            xmin:= StrToFloat(my_list[2]);
+            xmax := StrToFloat(my_list[3]);
+            x := xmin;
+            le_parser.Expression:= my_list[0];
+
+            with LineSeries do begin
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+
+            Chart1.Extent.XMin := StrToFloat(my_list[2]);
+            Chart1.Extent.XMax := StrToFloat(my_list[3]);
+            LineSeries.ShowLines:= True;
+            LineSeries.LinePen.Color:= StringToColor(my_list[4]);
+            LineSeries.Active:= True;
+
+            Chart1.AddSeries( LineSeries );
+            ShowMessage('func1 graphed');
+
+            ///////////////////// SECOND FUNCTION /////////////
+
+            le_parser.Expression:= my_list[1];
+
+            LineSeries := TLineseries.Create( Chart1 );
+            xmin:= StrToFloat(my_list[2]);
+            xmax := StrToFloat(my_list[3]);
+            x := xmin;
+
+            with LineSeries do begin
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+
+            LineSeries.ShowLines:= True;
+            LineSeries.LinePen.Color:= StringToColor(my_list[5]);
+            LineSeries.Active:= True;
+
+            Chart1.AddSeries( LineSeries );
+
+            ShowMessage('func2 graphed');
+
+            for i := 0 to root_finder.results_size - 1 do begin
+              Chart1LineSeries1.AddXY(root_finder.results[i], root_finder.f2(root_finder.results[i]));
+            end;
             Chart1LineSeries1.ShowPoints:= True;
-            root_finder.Destroy;
+            Chart1LineSeries1.ShowLines:= False;
+//            root_finder.Destroy;
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Interseccion: ' + FloatToStr(res) + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'Raices: ';
+            for i := 0 to root_finder.results_size - 1 do begin
+              memHistorial.Text := memHistorial.Text + FloatToStr(root_finder.results[i]) + ', ';
+            end;
+            memHistorial.Text := memHistorial.Text + LineEnding;
 //            ShowMessage('intersection(f,g,a,b,colorf,colorg). Interseccion de dos funciones en un intervalo.' +
 //            ' Todos los puntos.'); SYNTAX
           end;

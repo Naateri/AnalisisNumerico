@@ -21,6 +21,8 @@ type
       SolutionSequence: TStringList;
       func, func2: String;
       Parse: TParseMath;
+      results_size: Integer;
+      results: array of real;
       function f(x: Real): Real;
       function f2(x: Real): Real;
       function fd(x: Real): Real; //differential
@@ -32,6 +34,7 @@ type
         function Newton(): Real;
         function Secante(): Real;
         function FixedPoint(): Real; //intersection with y = x
+        function all_bisection(): Real;
 
       public
         constructor create;
@@ -43,9 +46,10 @@ type
     const
          IsBisection = 0;
          IsFakePos = 1;
-         IsNewton = 3;
+         IsNewton = 100;
          IsSecant = 2;
-         IsFixedPoint = 4;
+         IsAllBisection = 3;
+         IsFixedPoint = 101;
 
 implementation
 
@@ -77,7 +81,7 @@ begin
      SolutionSequence.Destroy;
      nSequence.Destroy;
      MethodList.Destroy;
-     Parse.destroy;
+//     Parse.destroy;
 end;
 
 function TNLEMethods.f(x: Real): Real;
@@ -335,6 +339,7 @@ begin
           IsNewton: Result := Newton();
           IsSecant: Result := Secante();
           IsFixedPoint: Result := FixedPoint();
+          IsAllBisection: Result := all_bisection();
      end;
 end;
 
@@ -374,6 +379,36 @@ begin
      until ( (newError <= error) or (n > Top) );
      Result := xnn;}
 end;
+
+function TNLEMethods.all_Bisection(): Real;
+var n: Integer = 0;
+   newA, newB, tempb: Real;
+   evalBolzano: Boolean;
+begin
+     Parse.Expression := func;
+     newA := a;
+     newB := a + 0.1;
+     tempb := b;
+     results_size:= 0;
+//     ShowMessage('all roots');
+     while (newB <= tempb) do begin
+           a := newA;
+           b := newB;
+           evalBolzano := Bolzano();
+           if (evalBolzano) then begin
+               Result := Bisection();
+//               ShowMessage('Result: ' + FloatToStr(Result));
+               SetLength(results, n+1);
+               results[n] := Result;
+               n := n + 1;
+           end;
+            newA := newA + 0.1;
+            newB := newB + 0.1;
+     end;
+     results_size := n;
+//     Result := xnn;
+end;
+
 
 end.
 

@@ -21,6 +21,8 @@ type
       SolutionSequence: TStringList;
       func: String;
       Parse: TParseMath;
+      results: array of Real;
+      results_size: Integer;
       function f(x: Real): Real;
       function f2(x: Real): Real;
       function fd(x: Real): Real; //differential
@@ -32,6 +34,7 @@ type
         function Newton(): Real;
         function Secante(): Real;
         function FixedPoint(): Real; //intersection with y = x
+        function all_Bisection(): Real;
 
       public
         constructor create;
@@ -46,6 +49,7 @@ type
          IsNewton = 2;
          IsSecant = 3;
          IsFixedPoint = 4;
+         IsAllBisection = 5;
 
 implementation
 
@@ -66,9 +70,9 @@ begin
      MethodList.AddObject('Newton', TObject (IsNewton) );
      MethodList.AddObject('Secante', TObject (IsSecant) );
      MethodList.AddObject('Punto Fijo', TObject (IsFixedPoint) );
-{     Parse := TParseMath.create();
+     Parse := TParseMath.create();
      Parse.AddVariable( 'x', 0);
-     Parse.Expression:= 'x';}
+     Parse.Expression:= 'x';
 end;
 
 destructor TNLEMethods.Destroy;
@@ -82,13 +86,13 @@ end;
 
 function TNLEMethods.f(x: Real): Real;
 begin
-     Result := 2.3 * exp(0.5*x) + 3 * power(x,4) -  power(x, 3) + power (x,2) + 3*x - 4;
+//     Result := 2.3 * exp(0.5*x) + 3 * power(x,4) -  power(x, 3) + power (x,2) + 3*x - 4;
      //Result := power(x, 2) - ln(x) - sin(x) - x;
 //     Result := (cos(x)+2)/3;
 
-{     Parse.Expression := func;
+     Parse.Expression := func;
      Parse.NewValue('x', x);
-     Result := Parse.Evaluate();}
+     Result := Parse.Evaluate();
 end;
 
 function TNLEMethods.f2(x: Real): Real;
@@ -125,7 +129,7 @@ var n: Integer = 0;
    sign: Real;
    evalBolzano: Boolean;
 begin
-//     Parse.Expression := func;
+     Parse.Expression := func;
      evalBolzano:= Bolzano();
      if (not evalBolzano) then
      begin
@@ -332,6 +336,7 @@ begin
           IsNewton: Result := Newton();
           IsSecant: Result := Secante();
           IsFixedPoint: Result := FixedPoint();
+          IsAllBisection: Result := all_Bisection();
      end;
 end;
 
@@ -369,6 +374,36 @@ begin
      until ( (newError <= error) or (n > Top) );
      Result := xnn;
 end;
+
+function TNLEMethods.all_Bisection(): Real;
+var n: Integer = 0;
+   newA, newB, tempb: Real;
+   evalBolzano: Boolean;
+begin
+     Parse.Expression := func;
+     newA := a;
+     newB := a + 0.1;
+     tempb := b;
+     results_size:= 0;
+//     ShowMessage('all roots');
+     while (newB <= tempb) do begin
+           a := newA;
+           b := newB;
+           evalBolzano := Bolzano();
+           if (evalBolzano) then begin
+               Result := Bisection();
+//               ShowMessage('Result: ' + FloatToStr(Result));
+               SetLength(results, n+1);
+               results[n] := Result;
+               n := n + 1;
+           end;
+            newA := newA + 0.1;
+            newB := newB + 0.1;
+     end;
+     results_size := n;
+//     Result := xnn;
+end;
+
 
 end.
 

@@ -147,6 +147,7 @@ end;
 procedure TGraph.btnCalculateClick(Sender: TObject);
 var //SL: TStringList;
   Res: Real;
+  i: Integer;
 begin
      {SL := TStringList.Create;
      SL.Add('3.14');
@@ -159,14 +160,16 @@ begin
      Methods.b := StrToFloat(EdiB.Text);
      Methods.error:= StrToFloat(EdiError.Text);
      Methods.func := ediFunc.Text;
-     Methods.Method:= IntPtr( cboMethods.Items.Objects[cboMethods.ItemIndex]);
+     ShowMessage('func: ' + Methods.func);
+     //Methods.Method:= IntPtr( cboMethods.Items.Objects[cboMethods.ItemIndex]);
+     Methods.Method:= 5;
      Res := Methods.Execute();
      if ( ( (Methods.globalBolzano = True) and (Methods.Method <=1) ) or (Methods.Method > 1) ) then
      begin
          //TempResult.Text := FloatToStr(Res);
-         TStringGrid1.Cols[ 0 ].Assign(Methods.nSequence);
+         {TStringGrid1.Cols[ 0 ].Assign(Methods.nSequence);
          TStringGrid1.Cols[ 1 ].Assign(Methods.SolutionSequence);
-         TStringGrid1.Cols[ 2 ].Assign(Methods.ErrorSequence);
+         TStringGrid1.Cols[ 2 ].Assign(Methods.ErrorSequence);}
          LabResult.Caption := FloatToStr(Res);
          LabIter.Caption:= IntToStr(Methods.nSequence.Count);
          Chart1LineSeries1.ShowPoints:= True;
@@ -176,8 +179,11 @@ begin
              Func2.Pen.Color:= clRed;
              Func2.Active:= True;
              Chart1LineSeries1.AddXY(Res, Res);
-         end else
-             Chart1LineSeries1.AddXY(Res, 0);
+         end else begin
+             for i := 0 to Methods.results_size - 1 do begin
+               Chart1LineSeries1.AddXY(Methods.results[i], 0);
+             end;
+         end;
      end else
      begin
        TStringGrid1.Cells[0,0] := 'No se';
@@ -199,6 +205,7 @@ end;
 procedure TGraph.Func1Calculate(const AX: Double; out AY: Double);
 begin
   Methods := TNLEMethods.create;
+  Methods.func:= ediFunc.Text;
   AY := Methods.f( AX );
   Methods.Destroy;
 end;
