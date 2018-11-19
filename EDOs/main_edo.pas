@@ -55,7 +55,7 @@ begin
   edo_solver.b:= StrToFloat(ediObj.Text);
   edo_solver.func_d:= (ediFunc_d.Text);
   Chart1LineSeries1.Active:= True;
-  labResult.Caption:= FloatToStr(edo_solver.heun());
+  labResult.Caption:= FloatToStr(edo_solver.dormand_prince());
   for i := 0 to Length(edo_solver.xn_s) - 1 do begin
     Chart1LineSeries1.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
   end;

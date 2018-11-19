@@ -19,6 +19,7 @@ type
     func_d: String;
     function euler(): Real;
     function heun(): Real;
+    function dormand_prince(): Real;
     private
       function fd(x: Real; y: Real): Real;
       function f_euler(i: Integer): Real;
@@ -103,6 +104,73 @@ begin
 
      //Result := xn_s[iters];
      Result := yn_s[iters]
+end;
+
+function TEdo.dormand_prince(): Real;
+var
+  iters, i: Integer;
+  k1, k2, k3, k4, k5, k6, k7: Real;
+  a21, a31, a32, a41, a42, a43, a51, a52, a53, a54, a61, a62, a63, a64, a65,
+    a71, a72, a73, a74, a75, a76, c2, c3, c4, c5,
+    b1, b2, b3, b4, b5, b6: Real;
+begin
+     iters := round ((b-a) / h);
+     SetLength(answers, iters+1);
+     SetLength(xn_s, iters+1);
+     SetLength(yn_s, iters+1);
+     answers[0] := x_0;
+     xn_s[0] := x_0;
+     yn_s[0] := y_0;
+
+     a21 :=  (1/5);
+     a31 := (3/40);
+     a32 := (9/40);
+     a41 := (44/45);
+     a42 := (-56/15);
+     a43 := (32/9);
+     a51 :=  (19372/6561);
+     a52 :=(-25360/2187);
+     a53 := (64448/6561);
+     a54 := (-212/729);
+     a61 := (9017/3168);
+     a62 := (-355/33);
+     a63 := (46732/5247);
+     a64 := (49/176);
+     a65 := (-5103/18656);
+     a71 := (35/384);
+     a72 := (0);
+     a73 := (500/1113);
+     a74 := (125/192);
+     a75 := (-2187/6784);
+     a76 := (11/84);
+
+     c2 := (1/5);
+     c3 := (3/10);
+     c4 := (4/5);
+     c5 := (8/9);
+
+     b1 := (35/384);
+     b2 := 0;
+     b3 := (500/1113);
+     b4 := (125/192);
+     b5 := (-2187/6784);
+     b6 := (11/84);
+
+     for i := 1 to iters do
+     begin
+       xn_s[i] := xn_s[i-1] + h;
+       k1 := fd(xn_s[i-1],yn_s[i-1]);
+       k2 := fd(xn_s[i-1] + c2*h, yn_s[i-1]+h*(a21*k1)  );
+       k3 := fd(xn_s[i-1] + c3*h, yn_s[i-1]+h*(a31*k1 + a32*k2));
+       k4 := fd(xn_s[i-1] + c4*h, yn_s[i-1] + h*(a41*k1 + a42*k2 + a43*k3));
+       k5 := fd(xn_s[i-1] + c5*h, yn_s[i-1] + h*(a51*k1 + a52*k2 + a53*k3 + a54*k4));
+       k6 := fd(xn_s[i-1] + h, yn_s[i-1] + h*(a61*k1 + a62*k2 + a63*k3 + a64*k4 + a65*k5) );
+       yn_s[i] := yn_s[i-1] + h * (b1*k1 + b3*k3 + b4*k4 + b5*k5 + b6*k6);
+     end;
+
+     //Result := xn_s[iters];
+     Result := yn_s[iters]
+
 end;
 
 end.

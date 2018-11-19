@@ -350,7 +350,8 @@ var n: Integer = 0;
 begin
 //     Parse.Expression:= func;
      func := func + '- (' + func2 + ')';
-     Result := Bisection();
+//     Result := Bisection();
+     Result := all_bisection();
 {     h := error/10;
      xnn := a; //first xn
      newError := 10;

@@ -184,7 +184,7 @@ var n: Integer = 0;
    sign: Real;
    evalBolzano: Boolean;
 begin
-//     Parse.Expression:= func;
+     Parse.Expression:= func;
      evalBolzano:= Bolzano();
      if (not evalBolzano) then
      begin

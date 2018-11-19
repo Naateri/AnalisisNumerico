@@ -61,10 +61,7 @@ type
 
   TForm1 = class(TForm)
     Chart1: TChart;
-    Chart1FuncSeries1: TFuncSeries;
-    Chart1FuncSeries2: TFuncSeries;
     Chart1LineSeries1: TLineSeries;
-    edoPlotter: TLineSeries;
     CmdBox1: TCmdBox;
     memHistorial: TMemo;
     Panel1: TPanel;
@@ -79,7 +76,6 @@ type
     values: array of Real;
     names: array of String;
     le_parser: TParseMath;
-    functions: TList;
 
     { private declarations }
   public
@@ -199,7 +195,7 @@ begin
 
       //edoPlotter.Clear;
 
-      edoPlotter.Active:= False;
+      //edoPlotter.Active:= False;
 
       Chart1.Extent.UseXMin := True;
       Chart1.Extent.UseXMax := True;
@@ -207,28 +203,6 @@ begin
       Chart1.Extent.XMin := -10;
 
   case func of
-          'help': begin ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding +
-          'update(var_name, var_value): actualiza el valor de una variable' + LineEnding
-          + 'root(f;a;b;method;true/false): f es la función, a y b el intervalo, los métodos pueden ser: ' +
-           'Biseccion (0), Falsa Posicion (1), Secante (2). True (1) o False (0)' +
-            ' te dice si puedes hallar todas las raíces.'+ LineEnding
-            + 'plot2d(f;a;b;color): f es la funcion, [a,b] el intervalo donde será graficado,' +
-            ' color el color de la gráfica. (Ej: clBlue).' + LineEnding
-            + 'polyroot([1,3,4,2]): WIP.' + LineEnding
-            + 'polynomial([1,2,3];[3,-3,4]): devuelve una función dados unos puntos. ' +
-            'Primer array: valores en x. Segundo array: valores en y.' + LineEnding
-            + 'SENL: WIP' + LineEnding
-            + 'intersection(f,g,a,b,color1,color2): halla la intersección entre dos funciones. '
-            + 'f y g son funciones, a y b el intervalo donde va a hallar la o las intersecciones, '
-            + 'color1 y color2 son los colores de f y g respectivamente.' + LineEnding
-            + 'integral(f,a,b,method): halla el valor de la integral de f en los intervalos a y b.'
-            + ' Method: 0 es trapecio, 1 es Simpson 1/3' + LineEnding
-            + 'area: WIP' + LineEnding
-            + 'area2: WIP' + LineEnding
-            + 'edo: WIP' + LineEnding
-            );
-            memHistorial.Text:= memHistorial.Text + func;
-          end;
           'exit': begin
             ShowMessage('Me voy.');
             Application.Terminate;
@@ -284,17 +258,13 @@ begin
             root_finder.a := StrToFloat(my_list[1]);
             root_finder.b:= StrToFloat(my_list[2]);
             root_finder.ErrorAllowed:= h;
-            root_finder.Method:= StrToInt(my_list[4]);
+            if (my_list.Count = 5) then
+               root_finder.Method:= StrToInt(my_list[4])
+            else
+                root_finder.Method:= 0;
             if (my_list[3] = 'True') or (my_list[3] = 'true') then begin
                 root_finder.Method:= 3;
             end;
-            {Chart1.Extent.UseXMin := False;
-            Chart1.Extent.UseXMax := False;
-            Chart1FuncSeries1.Active:= False;
-            Chart1FuncSeries1.Pen.Color := clBlack;
-            Chart1FuncSeries1.Active:= True;
-            Chart1.Proportional:= True;
-            Chart1FuncSeries2.Active:= False;}
 
             res := root_finder.Execute();
             //ShowMessage('root(f,a,b,bool,method=1). Biseccion, Falsa Posicion, Secante.'); SYNTAX
@@ -408,18 +378,18 @@ begin
 
             for iPos := 0 to array_list.Count - 1 do
                 pts[iPos][0] := StrToFloat(array_list[iPos]);
-                ShowMessage('Valor: ' + array_list[iPos]);
+                //ShowMessage('Valor: ' + array_list[iPos]);
             //copy values to create the polynomial
 
             array_list.Destroy;
             lagrange_solver.points := pts;
 
             current_func := lagrange_solver.polyroot_text();
-            current_func2:= current_func;
+{            current_func2:= current_func;
             Chart1.Extent.UseYMax := True;
             Chart1.Extent.UseYMax := True;
             Chart1.Extent.XMax := 10;
-            Chart1.Extent.XMin := -10;
+            Chart1.Extent.XMin := -10;}
 
 {            Chart1FuncSeries1.Active:= False;
             Chart1FuncSeries2.Active:= False;
@@ -448,7 +418,7 @@ begin
 
             for iPos := 0 to array_list.Count - 1 do begin
               pts[iPos][0] := StrToFloat(array_list[iPos]);
-              ShowMessage('Valor: ' + array_list[iPos]);
+            //  ShowMessage('Valor: ' + array_list[iPos]);
             end;
             //copy x values to Lagrange
 
@@ -461,7 +431,7 @@ begin
             array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
 
             for iPos := 0 to array_list.Count - 1 do begin
-                ShowMessage('Valor: ' + array_list[iPos]);
+//                ShowMessage('Valor: ' + array_list[iPos]);
                 pts[iPos][1] := StrToFloat(array_list[iPos]);
             end;
             array_list.Sort; //to get min and max
@@ -472,21 +442,22 @@ begin
 
             current_func := lagrange_solver.find_text();
             current_func2:= current_func;
-            Chart1.Extent.UseYMax := True;
+            {Chart1.Extent.UseYMax := True;
             Chart1.Extent.UseYMax := True;
             Chart1.Extent.XMax := 10;
-            Chart1.Extent.XMin := -10;
+            Chart1.Extent.XMin := -10;}
+            Chart1.Visible:= False;
 {            Chart1.Extent.XMin := pts[0][0];
             Chart1.Extent.XMax := pts[lagrange_solver.num_points-1][0];
             Chart1.Extent.YMin := pts[0][1];
             Chart1.Extent.YMax := pts[lagrange_solver.num_points-1][1]; }
-            Chart1FuncSeries1.Active:= False;
+{            Chart1FuncSeries1.Active:= False;
             Chart1FuncSeries2.Active:= False;
             Chart1FuncSeries1.Pen.Color:= clBlue;
-            Chart1FuncSeries1.Active:= True;
+            Chart1FuncSeries1.Active:= True; }
 
-            Chart1.Visible:= True;
-            Chart1.Proportional:= True;
+//            Chart1.Visible:= True;
+//            Chart1.Proportional:= True;
 
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
             memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
@@ -596,7 +567,7 @@ begin
             LineSeries.Active:= True;
 
             Chart1.AddSeries( LineSeries );
-            ShowMessage('func1 graphed');
+//            ShowMessage('func1 graphed');
 
             ///////////////////// SECOND FUNCTION /////////////
 
@@ -625,17 +596,19 @@ begin
 
             Chart1.AddSeries( LineSeries );
 
-            ShowMessage('func2 graphed');
+//            ShowMessage('func2 graphed');
 
             for i := 0 to root_finder.results_size - 1 do begin
               Chart1LineSeries1.AddXY(root_finder.results[i], root_finder.f2(root_finder.results[i]));
             end;
             Chart1LineSeries1.ShowPoints:= True;
+            Chart1LineSeries1.ShowLines:= False;
 //            root_finder.Destroy;
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
             memHistorial.Text:= memHistorial.Text + 'Raices: ';
             for i := 0 to root_finder.results_size - 1 do begin
-              memHistorial.Text := memHistorial.Text + FloatToStr(root_finder.results[i]) + ', ';
+              memHistorial.Text := memHistorial.Text + '(' + FloatToStr(root_finder.results[i]) + ', ' +
+              FloatToStr( root_finder.f2(res)) + ')' + ', ';
             end;
             memHistorial.Text := memHistorial.Text + LineEnding;
 //            ShowMessage('intersection(f,g,a,b,colorf,colorg). Interseccion de dos funciones en un intervalo.' +
@@ -646,7 +619,10 @@ begin
             integral_solver.func:= my_list[0];
             integral_solver.a := StrToFloat(my_list[1]);
             integral_solver.b := StrToFloat(my_list[2]);
-            integral_solver.Method:= StrToInt(my_list[3]);
+            if (my_list.Count = 4) then
+               integral_solver.Method:= StrToInt(my_list[3])
+            else
+                integral_solver.Method:= 2;
 
             current_func:= my_list[0];
             current_func2:= my_list[1];
@@ -714,7 +690,10 @@ begin
             integral_solver.func:= my_list[0] + ' - (' + my_list[1] + ')';
             integral_solver.a := StrToFloat(my_list[2]);
             integral_solver.b := StrToFloat(my_list[3]);
-            integral_solver.Method:= StrToInt(my_list[4]);
+            if (my_list.Count = 5) then
+               integral_solver.Method:= StrToInt(my_list[4])
+            else
+                integral_solver.Method:= 2;
             integral_solver.area:= True;
 
             current_func:= my_list[0];
@@ -802,20 +781,37 @@ begin
 
             edo_solver :=  TEdo.create();
             edo_solver.parser := le_parser;
-            edoPlotter.Clear;
+            //edoPlotter.Clear;
             edo_solver.func_d:= my_list[0];
             edo_solver.a := StrToFloat(my_list[1]);
             edo_solver.x_0 := StrToFloat(my_list[1]);
             edo_solver.y_0:= StrToFloat(my_list[2]);
             edo_solver.b := StrToFloat(my_list[3]);
-            edo_solver.method := StrToInt(my_list[4]);
+            if (my_list.Count = 5) then
+               edo_solver.method := StrToInt(my_list[4])
+            else
+                edo_solver.method:= 2;
             res := edo_solver.Execute();
+            //le_parser.Expression:= my_list[1];
+
+            LineSeries := TLineseries.Create( Chart1 );
 
             for i:= 0 to Length(edo_solver.xn_s) - 1 do begin
-              edoPlotter.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
+              LineSeries.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
             end;
 
-            edoPlotter.Active:= True;
+            LineSeries.ShowLines:= True;
+            LineSeries.LinePen.Color:= clBlue;
+            LineSeries.Active:= True;
+
+            Chart1.AddSeries( LineSeries );
+
+
+            {for i:= 0 to Length(edo_solver.xn_s) - 1 do begin
+              edoPlotter.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
+            end; }
+
+            //edoPlotter.Active:= True;
 
             if (edo_solver.a > edo_solver.b) then begin
                 Chart1.Extent.XMin := edo_solver.b;
@@ -835,6 +831,38 @@ begin
      end;
 //  Chart1FuncSeries1.Extent.UseXMin := False;
 //  Chart1FuncSeries1.Extent.UseXMax := False;
+
+    case Input of
+            'clearplot': begin
+
+//              SetLength(TSeries, 4);
+//              Chart1.Series.Clear;
+              Chart1.ClearSeries;
+//              Chart1.Refresh;
+            end;
+            'help': begin ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding +
+          'update(var_name, var_value): actualiza el valor de una variable' + LineEnding
+          + 'root(f;a;b;method;true/false): f es la función, a y b el intervalo, los métodos pueden ser: ' +
+           'Biseccion (0), Falsa Posicion (1), Secante (2). True (1) o False (0)' +
+            ' te dice si puedes hallar todas las raíces.'+ LineEnding
+            + 'plot2d(f;a;b;color): f es la funcion, [a,b] el intervalo donde será graficado,' +
+            ' color el color de la gráfica. (Ej: clBlue).' + LineEnding
+            + 'polyroot([1,3,4,2]): Halla un polinomio con las raíces dadas.' + LineEnding
+            + 'polynomial([1,2,3];[3,-3,4]): devuelve una función dados unos puntos. ' +
+            'Primer array: valores en x. Segundo array: valores en y.' + LineEnding
+            + 'SENL: WIP' + LineEnding
+            + 'intersection(f,g,a,b,color1,color2): halla la intersección entre dos funciones. '
+            + 'f y g son funciones, a y b el intervalo donde va a hallar la o las intersecciones, '
+            + 'color1 y color2 son los colores de f y g respectivamente.' + LineEnding
+            + 'integral(f,a,b,method): halla el valor de la integral de f en los intervalos a y b. Grafica el area.'
+            + ' Method: 0 es trapecio, 1 es Simpson 1/3, 2 es Simpson 3/8' + LineEnding
+            + 'area(f,g,a,b,method): halla la integral entre f y g en el intervalo [a,b].' + LineEnding
+            + 'edo(df, x0, y0, xn, method): plottea la funcion primitiva de df, desde x0 hasta yn.' +
+            'method: 0->Euler, 1->Heun, 2->Runge Kutta cuarto orden, 3->Dormand-Prince. ' + LineEnding
+            );
+            memHistorial.Text:= memHistorial.Text + func;
+          end;
+    end;
 
   CmdBox1.StartRead(clWhite, clBlack, 'Numerico>', clWhite, clBlack);
 
