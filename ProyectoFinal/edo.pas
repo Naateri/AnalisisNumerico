@@ -22,6 +22,7 @@ type
     function heun(): Real;
     function rk4(): Real;
     function dormand_prince(): Real;
+    function rk_fehlberg(): Real;
     function Execute(): Real;
     private
       function fd(x: Real; y: Real): Real;
@@ -38,6 +39,7 @@ const
   isHeun = 1;
   isDormandPrince = 3;
   isRk4 = 2;
+  isFehlberg = 4;
 
 constructor TEdo.create();
 begin
@@ -163,6 +165,9 @@ var
     b1, b2, b3, b4, b5, b6: Real;
 begin
      iters := round ((b-a) / h);
+     h := Sign(b-a) * h;
+     iters := abs(iters);
+
      SetLength(answers, iters+1);
      SetLength(xn_s, iters+1);
      SetLength(yn_s, iters+1);
@@ -221,6 +226,39 @@ begin
 
 end;
 
+function TEdo.rk_fehlberg(): Real;
+var
+  iters, i: Integer;
+  k1, k2, k3, k4, k5, k6, m: Real;
+begin
+     iters := round ((b-a) / h);
+     h := Sign(b-a) * h;
+     iters := abs(iters);
+
+     SetLength(answers, iters+1);
+     SetLength(xn_s, iters+1);
+     SetLength(yn_s, iters+1);
+     answers[0] := x_0;
+     xn_s[0] := x_0;
+     yn_s[0] := y_0;
+
+     for i := 1 to iters do begin
+       k1 := fd(xn_s[i-1], yn_s[i-1]);
+       k2 := fd(xn_s[i-1] + h/4, yn_s[i-1] + ( 1/4 * k1) );
+       k3 := fd(xn_s[i-1] + 3*h/8, yn_s[i-1] + ( 3/32 * k1 + 9/32 * k2) );
+       k4 := fd(xn_s[i-1] + 12/13 * h, yn_s[i-1] + ( 1932/2197 * k1 + 7200/2197*k2 + 7296/2197 * k3) );
+       k5 := fd(xn_s[i-1] + h, yn_s[i-1] + ( 439/216 * k1 - 8*k2 + 3680/513 * k3 - 845/4104 * k4) );
+       k6 := fd(xn_s[i-1] + 1/2 * h, yn_s[i-1] + ( -8/27 * k1 + 2*k2 - 3544/2565 * k3 + 1859/4104 * k4 - 11/40) );
+
+       m := 25/216 * k1 + 1408/2565*k3 + 2197/4101 * k4 - 1/5 * k5;
+       yn_s[i] := yn_s[i-1] + h*m;
+       xn_s[i] := xn_s[i-1] + h;
+//       ShowMessage('yn: ' + FloatToStr(yn_s[i]));
+     end;
+
+     Result := yn_s[iters];
+end;
+
 
 function TEdo.Execute(): Real;
 begin
@@ -231,7 +269,9 @@ begin
      else if (method = isDormandPrince) then
         Result := dormand_prince()
      else if (method = isRk4) then
-        Result := rk4();
+        Result := rk4()
+     else if (method = isFehlberg) then
+        Result := rk_fehlberg();
 end;
 
 end.
