@@ -84,8 +84,16 @@ object Form1: TForm1
       Top = 1
       Width = 374
       Align = alTop
+      AutoFillColumns = True
+      ColCount = 3
       FixedCols = 0
+      RowCount = 175
       TabOrder = 0
+      ColWidths = (
+        118
+        118
+        120
+      )
     end
     object memHistorial: TMemo
       Left = 1

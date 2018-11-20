@@ -51,7 +51,7 @@ error = 0.01
 interface
 
 uses
-  Classes, SysUtils, {FileUtil,} uCmdBox, TAGraph, TAFuncSeries, TASeries, Forms, math,
+  Classes, SysUtils, FileUtil, uCmdBox, TAGraph, TAFuncSeries, TASeries, Forms, math,
   Controls, Graphics, Dialogs, Grids, StdCtrls, ExtCtrls, nle_methods, lagrange_pol, Integrals,
   edo, MyMatrix, NonLinearSystem, ParseMath;
 
@@ -73,8 +73,10 @@ type
     procedure FormCreate(Sender: TObject);
     function CreatingStrings(Input: string): String;
     function CreatingNumbers(Input: String): Real;
+    function find_string(Input: string): String;
     function f(x:Real): Real;
     function f2(x:Real): Real;
+    procedure finding_roots(resu: Real; my_list: TStringList);
   private
     h: Real;
     values: array of Real; //integer/real variables
@@ -165,14 +167,96 @@ begin
 
   s_names[0] := '';
   s_names[1] := '';
-
+  s_values[0] := '';
+  s_values[1] := '';
 
   for i := 2 to 99 do begin
       names[i] := '';
       s_names[i] := '';
+      s_values[i] := '';
   end;
 
   current_var:= 2;
+
+end;
+
+procedure TForm1.finding_roots(resu: Real; my_list: TStringList);
+var
+  root_finder: TNLEMethods;
+  res: Real;
+  xmin, xmax, x: Real;
+  func, temp: String;
+  i: Integer;
+begin
+  current_func:= my_list[0];
+//            current_func2:= my_list[0];
+root_finder := TNLEMethods.create;
+root_finder.Parse := le_parser;
+root_finder.func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) );
+
+//root_finder.a := StrToFloat(my_list[1]);
+            le_parser.Expression:= my_list[1];
+            root_finder.a := le_parser.Evaluate();
+            le_parser.Expression:= my_list[2];
+            root_finder.b := le_parser.Evaluate();
+//            root_finder.b:= StrToFloat(my_list[2]);
+            root_finder.ErrorAllowed:= h;
+            if (my_list.Count = 5) then
+               root_finder.Method:= StrToInt(my_list[4])
+            else
+                root_finder.Method:= 0;
+            if (my_list[3] = 'True') or (my_list[3] = 'true') then begin
+                root_finder.Method:= 3;
+            end;
+
+            xmin:= root_finder.a;
+            xmax := root_finder.b;
+            Chart1.Extent.XMin := root_finder.a;
+            Chart1.Extent.XMax := root_finder.b;
+
+            res := root_finder.Execute();
+            ShowMessage('Root: ' + FloatToStr( res ) );
+
+            LineSeries := TLineseries.Create( Chart1 );
+            x := xmin;
+
+            le_parser.Expression:= root_finder.func;
+
+            with LineSeries do begin
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+
+            LineSeries.ShowLines:= True;
+            LineSeries.LinePen.Color:= clBlue;
+            LineSeries.Active:= True;
+
+            Chart1.AddSeries( LineSeries );
+
+            LineSeries := TLineSeries.Create(Chart1);
+
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            if (my_list[3] = 'True') or (my_list[3] = 'true') then begin
+               for i := 0 to root_finder.results_size - 1 do begin
+                 LineSeries.AddXY(root_finder.results[i], 0);
+                 memHistorial.Text:= memHistorial.Text + 'Roots: ' + FloatToStr( root_finder.results[i] ) + ', ';
+               end;
+               memHistorial.Text:= memHistorial.Text + LineEnding;
+            end else begin
+                LineSeries.AddXY(res, 0);
+                memHistorial.Text:= memHistorial.Text + 'Root: ' + FloatToStr( res ) + LineEnding;
+            end;
+            LineSeries.ShowPoints:= True;
+            Chart1.AddSeries(LineSeries);
+            Chart1.Visible:= True;
+            //root_finder.Destroy;
 
 end;
 
@@ -291,74 +375,10 @@ begin
   h := values[0];
   current_func:= '0';
   current_func2:= '0';
-  ShowMessage('Input: ' + Input);
 
   case func of
           'root': begin
-            current_func:= my_list[0];
-//            current_func2:= my_list[0];
-
-            root_finder := TNLEMethods.create;
-            root_finder.Parse := le_parser;
-            root_finder.func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-
-            root_finder.a := StrToFloat(my_list[1]);
-            root_finder.b:= StrToFloat(my_list[2]);
-            root_finder.ErrorAllowed:= h;
-            if (my_list.Count = 5) then
-               root_finder.Method:= StrToInt(my_list[4])
-            else
-                root_finder.Method:= 0;
-            if (my_list[3] = 'True') or (my_list[3] = 'true') then begin
-                root_finder.Method:= 3;
-            end;
-
-            res := root_finder.Execute();
-            ShowMessage('Root: ' + FloatToStr( res ) );
-
-            LineSeries := TLineseries.Create( Chart1 );
-            xmin:= StrToFloat(my_list[1]);
-            xmax := StrToFloat(my_list[2]);
-            x := xmin;
-
-            with LineSeries do begin
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-
-            Chart1.Extent.XMin := StrToFloat(my_list[1]);
-            Chart1.Extent.XMax := StrToFloat(my_list[2]);
-            LineSeries.ShowLines:= True;
-            LineSeries.LinePen.Color:= clBlue;
-            LineSeries.Active:= True;
-
-            Chart1.AddSeries( LineSeries );
-
-            LineSeries := TLineSeries.Create(Chart1);
-
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            if (my_list[3] = 'True') or (my_list[3] = 'true') then begin
-               for i := 0 to root_finder.results_size - 1 do begin
-                 LineSeries.AddXY(root_finder.results[i], 0);
-                 memHistorial.Text:= memHistorial.Text + 'Roots: ' + FloatToStr( root_finder.results[i] ) + ', ';
-               end;
-               memHistorial.Text:= memHistorial.Text + LineEnding;
-            end else begin
-                LineSeries.AddXY(res, 0);
-                memHistorial.Text:= memHistorial.Text + 'Root: ' + FloatToStr( res ) + LineEnding;
-            end;
-            LineSeries.ShowPoints:= True;
-            Chart1.AddSeries(LineSeries);
-            Chart1.Visible:= True;
-            //root_finder.Destroy;
-            Result := res;
+            finding_roots(Result, my_list);
             Exit;
           end;
 
@@ -557,14 +577,10 @@ begin
             edo_solver.parser := le_parser;
             //edoPlotter.Clear;
             edo_solver.func_d:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            ShowMessage('edo0' + my_list[0] + intToStr(my_list.Count));
             edo_solver.a := StrToFloat(my_list[1]);
-            ShowMessage('edo1');
             edo_solver.x_0 := StrToFloat(my_list[1]);
             edo_solver.y_0:= StrToFloat(my_list[2]);
-            ShowMessage('edo2');
             edo_solver.b := StrToFloat(my_list[3]);
-            ShowMessage('edo3');
             if (my_list.Count = 5) then
                edo_solver.method := StrToInt(my_list[4])
             else
@@ -607,6 +623,21 @@ begin
 
      Result := StrToFloat(Input);
 
+end;
+
+function TForm1.find_string(Input: String): String;
+var
+  index: Integer;
+begin
+     index := 0;
+     while s_names[index] <> '' do begin
+       if s_names[index] = Input then begin
+          Result := s_values[index];
+          Exit;
+          Break;
+       end;
+     end;
+     Result := Input; //string was not created
 end;
 
 procedure TForm1.CmdBox1Input(ACmdBox: TCmdBox; Input: string);
@@ -693,7 +724,7 @@ begin
 
             names[iPos] := my_list[0];
             for i := 2 to my_list.Count - 1 do
-                my_list[1] := my_list[1] + my_list[i] + ';';
+                my_list[1] := my_list[1] + ';' + my_list[i];
             values[iPos] := CreatingNumbers(my_list[1]);
             StringGrid1.Cells[0,current_var+1] := my_list[0];
             StringGrid1.Cells[1,current_var+1] := 'Real';
@@ -701,7 +732,7 @@ begin
 
             le_parser.AddVariable(names[iPos], values[iPos]);
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Variable ' + my_list[0] + 'creada con valor ' +
+            memHistorial.Text:= memHistorial.Text + 'Variable ' + my_list[0] + ' creada con valor ' +
             FloatToStr(values[iPos]) + '.' + LineEnding;
 
             current_var := current_var + 1;
@@ -716,6 +747,9 @@ begin
             end;
 
             s_names[iPos] := my_list[0];
+            for i := 2 to my_list.Count - 1 do
+                my_list[1] := my_list[1] + ';' + my_list[i];
+
             s_values[iPos] := CreatingStrings(my_list[1]);
 
             StringGrid1.Cells[0,current_var+1] := my_list[0];
@@ -723,7 +757,7 @@ begin
             StringGrid1.Cells[2,current_var+1] := s_values[iPos];
 
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Variable ' + my_list[0] + 'creada con valor ' + s_values[iPos] + '.'
+            memHistorial.Text:= memHistorial.Text + 'Variable ' + my_list[0] + ' creada con valor ' + s_values[iPos] + '.'
             + LineEnding;
 
             current_var := current_var + 1;
@@ -731,85 +765,20 @@ begin
           end;
 
           'root': begin
-            current_func:= my_list[0];
-//            current_func2:= my_list[0];
-
-            root_finder := TNLEMethods.create;
-            root_finder.Parse := le_parser;
-            root_finder.func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-
-            root_finder.a := StrToFloat(my_list[1]);
-            root_finder.b:= StrToFloat(my_list[2]);
-            root_finder.ErrorAllowed:= h;
-            if (my_list.Count = 5) then
-               root_finder.Method:= StrToInt(my_list[4])
-            else
-                root_finder.Method:= 0;
-            if (my_list[3] = 'True') or (my_list[3] = 'true') then begin
-                root_finder.Method:= 3;
-            end;
-
-            res := root_finder.Execute();
-            //ShowMessage('root(f,a,b,bool,method=1). Biseccion, Falsa Posicion, Secante.'); SYNTAX
-	    //o es: root(f,a,b,bool) o root(f,a,b,bool,method)
-            ShowMessage('Root: ' + FloatToStr( res ) );
-
-            LineSeries := TLineseries.Create( Chart1 );
-            xmin:= StrToFloat(my_list[1]);
-            xmax := StrToFloat(my_list[2]);
-            x := xmin;
-
-            with LineSeries do begin
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-
-            Chart1.Extent.XMin := StrToFloat(my_list[1]);
-            Chart1.Extent.XMax := StrToFloat(my_list[2]);
-            LineSeries.ShowLines:= True;
-            LineSeries.LinePen.Color:= clBlue;
-            LineSeries.Active:= True;
-
-            Chart1.AddSeries( LineSeries );
-
-            LineSeries := TLineSeries.Create(Chart1);
-
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            if (my_list[3] = 'True') or (my_list[3] = 'true') then begin
-               for i := 0 to root_finder.results_size - 1 do begin
-                 LineSeries.AddXY(root_finder.results[i], 0);
-                 memHistorial.Text:= memHistorial.Text + 'Roots: ' + FloatToStr( root_finder.results[i] ) + ', ';
-               end;
-               memHistorial.Text:= memHistorial.Text + LineEnding;
-            end else begin
-                LineSeries.AddXY(res, 0);
-                memHistorial.Text:= memHistorial.Text + 'Root: ' + FloatToStr( res ) + LineEnding;
-            end;
-            LineSeries.ShowPoints:= True;
-            Chart1.AddSeries(LineSeries);
-            Chart1.Visible:= True;
-            //root_finder.Destroy;
-
+            finding_roots(res, my_list);
           end;
           'plot2d': begin
 //            Chart1.ClearSeries;
-            {parser := TParseMath.create();
-            parser.AddVariable( 'x', 0);
-            parser.Expression:= my_list[0];}
-            current_func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
+            current_func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) );
             //current_func2:= my_list[0];
-            le_parser.Expression:= current_func;
             LineSeries := TLineseries.Create( Chart1 );
-            xmin:= StrToFloat(my_list[1]);
-            xmax := StrToFloat(my_list[2]);
+            le_parser.Expression:= my_list[1];
+            xmin:= le_parser.Evaluate();
+            le_parser.Expression:= my_list[2];
+            xmax := le_parser.Evaluate();
             x := xmin;
+
+            le_parser.Expression:= current_func;
 
             with LineSeries do begin
                  repeat
@@ -822,17 +791,6 @@ begin
                        x := x + 0.01;
                  until (x >= xmax);
             end;
-
-            Chart1.Extent.XMin := StrToFloat(my_list[1]);
-            Chart1.Extent.XMax := StrToFloat(my_list[2]);
-{            Chart1FuncSeries2.Active:= False;
-            Chart1FuncSeries1.Active:= False;
-            Chart1FuncSeries1.Pen.Color := StringToColor(my_list[3]);
-            Chart1FuncSeries1.Active:= True;}
-
-{            TLineSeries(functions[functions.Count - 1]).ShowLines:= True;
-            TLineSeries(functions[functions.Count - 1]).LinePen.Color:= StringToColor(my_list[3]);
-            TLineSeries(functions[functions.Count - 1]).Active:= True; }
 
             LineSeries.ShowLines:= True;
             LineSeries.LinePen.Color:= StringToColor(my_list[3]);
