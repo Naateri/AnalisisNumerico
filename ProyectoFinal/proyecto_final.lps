@@ -20,8 +20,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <IsVisibleTab Value="True"/>
-        <TopLine Value="646"/>
-        <CursorPos X="27" Y="664"/>
+        <TopLine Value="796"/>
+        <CursorPos X="73" Y="807"/>
         <UsageCount Value="201"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -63,8 +63,8 @@
         <Filename Value="integrals.pas"/>
         <UnitName Value="Integrals"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="66"/>
-        <CursorPos X="34" Y="81"/>
+        <TopLine Value="65"/>
+        <CursorPos X="18" Y="87"/>
         <UsageCount Value="92"/>
         <Loaded Value="True"/>
       </Unit6>
@@ -79,8 +79,8 @@
       <Unit8>
         <Filename Value="edo.pas"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="25"/>
-        <CursorPos X="33" Y="33"/>
+        <TopLine Value="35"/>
+        <CursorPos X="33" Y="48"/>
         <UsageCount Value="92"/>
         <Loaded Value="True"/>
       </Unit8>
@@ -88,8 +88,8 @@
         <Filename Value="mymatrix.pas"/>
         <UnitName Value="MyMatrix"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="183"/>
-        <CursorPos Y="194"/>
+        <TopLine Value="184"/>
+        <CursorPos Y="206"/>
         <UsageCount Value="92"/>
         <Loaded Value="True"/>
       </Unit9>
@@ -97,8 +97,8 @@
         <Filename Value="nonlinearsystem.pas"/>
         <UnitName Value="NonLinearSystem"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="14"/>
-        <CursorPos X="5" Y="27"/>
+        <TopLine Value="78"/>
+        <CursorPos X="6" Y="96"/>
         <UsageCount Value="92"/>
         <Loaded Value="True"/>
       </Unit10>
@@ -106,123 +106,123 @@
     <JumpHistory Count="30" HistoryIndex="29">
       <Position1>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="875" Column="11" TopLine="870"/>
+        <Caret Line="805" Column="24" TopLine="797"/>
       </Position1>
       <Position2>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="439" Column="2" TopLine="428"/>
+        <Caret Line="807" Column="25" TopLine="797"/>
       </Position2>
       <Position3>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="477" Column="13" TopLine="466"/>
+        <Caret Line="206" Column="9" TopLine="188"/>
       </Position3>
       <Position4>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="806" Column="24" TopLine="798"/>
+        <Caret Line="760" Column="3" TopLine="754"/>
       </Position4>
       <Position5>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="805" Column="24" TopLine="797"/>
+        <Caret Line="843" Column="39" TopLine="822"/>
       </Position5>
       <Position6>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="807" Column="25" TopLine="797"/>
+        <Caret Line="621" Column="61" TopLine="612"/>
       </Position6>
       <Position7>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="206" Column="9" TopLine="188"/>
+        <Caret Line="692" Column="61" TopLine="682"/>
       </Position7>
       <Position8>
-        <Filename Value="final_project_main.pas"/>
-        <Caret Line="760" Column="3" TopLine="754"/>
+        <Filename Value="edo.pas"/>
+        <Caret Line="45" TopLine="25"/>
       </Position8>
       <Position9>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="843" Column="39" TopLine="822"/>
+        <Caret Line="412" Column="25" TopLine="391"/>
       </Position9>
       <Position10>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="621" Column="61" TopLine="612"/>
+        <Caret Line="758" Column="51" TopLine="738"/>
       </Position10>
       <Position11>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="692" Column="61" TopLine="682"/>
+        <Caret Line="738" Column="52" TopLine="723"/>
       </Position11>
       <Position12>
-        <Filename Value="edo.pas"/>
-        <Caret Line="45" TopLine="25"/>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="485" Column="91" TopLine="471"/>
       </Position12>
       <Position13>
-        <Filename Value="final_project_main.pas"/>
-        <Caret Line="412" Column="25" TopLine="391"/>
+        <Filename Value="edo.pas"/>
+        <Caret Line="273" Column="27" TopLine="254"/>
       </Position13>
       <Position14>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="758" Column="51" TopLine="738"/>
+        <Caret Line="386" TopLine="371"/>
       </Position14>
       <Position15>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="738" Column="52" TopLine="723"/>
+        <Caret Line="700" Column="37" TopLine="684"/>
       </Position15>
       <Position16>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="485" Column="91" TopLine="471"/>
+        <Caret Line="564" Column="36" TopLine="553"/>
       </Position16>
       <Position17>
-        <Filename Value="edo.pas"/>
-        <Caret Line="273" Column="27" TopLine="254"/>
+        <Filename Value="final_project_main.pas"/>
+        <Caret Line="290" Column="19" TopLine="290"/>
       </Position17>
       <Position18>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="386" TopLine="371"/>
+        <Caret Line="54" Column="22" TopLine="43"/>
       </Position18>
       <Position19>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="700" Column="37" TopLine="684"/>
+        <Caret Line="264" Column="14" TopLine="253"/>
       </Position19>
       <Position20>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="564" Column="36" TopLine="553"/>
+        <Caret Line="509" Column="23" TopLine="499"/>
       </Position20>
       <Position21>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="290" Column="19" TopLine="290"/>
+        <Caret Line="79" Column="28" TopLine="61"/>
       </Position21>
       <Position22>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="54" Column="22" TopLine="43"/>
+        <Caret Line="929" Column="37" TopLine="921"/>
       </Position22>
       <Position23>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="264" Column="14" TopLine="253"/>
+        <Caret Line="910" Column="40" TopLine="893"/>
       </Position23>
       <Position24>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="509" Column="23" TopLine="499"/>
+        <Caret Line="780" Column="60" TopLine="777"/>
       </Position24>
       <Position25>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="79" Column="28" TopLine="61"/>
+        <Caret Line="1151" Column="39" TopLine="1148"/>
       </Position25>
       <Position26>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="929" Column="37" TopLine="921"/>
+        <Caret Line="454" Column="43" TopLine="439"/>
       </Position26>
       <Position27>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="910" Column="40" TopLine="893"/>
+        <Caret Line="601" Column="51" TopLine="589"/>
       </Position27>
       <Position28>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="780" Column="60" TopLine="777"/>
+        <Caret Line="581" Column="52" TopLine="571"/>
       </Position28>
       <Position29>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="1151" Column="39" TopLine="1148"/>
+        <Caret Line="803" Column="55" TopLine="795"/>
       </Position29>
       <Position30>
         <Filename Value="final_project_main.pas"/>
-        <Caret Line="454" Column="43" TopLine="439"/>
+        <Caret Line="807" Column="93" TopLine="798"/>
       </Position30>
     </JumpHistory>
   </ProjectSession>

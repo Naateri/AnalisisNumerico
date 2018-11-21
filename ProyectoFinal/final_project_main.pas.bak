@@ -81,6 +81,7 @@ type
     function finding_lagrange(my_list: TStringList): String;
     function finding_integral(my_list: TStringList): Real;
     function finding_area(my_list: TStringList): Real;
+    function finding_edo(my_list: TStringList): Real;
   private
     h: Real;
     values: array of Real; //integer/real variables
@@ -160,7 +161,8 @@ begin
   le_parser.AddVariable('y', 0);
   le_parser.AddVariable('z', 0);
   le_parser.AddVariable('w', 0);
-  le_parser.AddVariable('h',0.01);
+  le_parser.AddVariable('error',0.01);
+  le_parser.AddVariable('decimal',2);
 
   StringGrid1.Cells[0,1] := names[0];
   StringGrid1.Cells[1,1] := 'Real';
@@ -370,6 +372,7 @@ begin
              integral_solver.a := le_parser.Evaluate();
              le_parser.Expression:= my_list[2];
              integral_solver.b:= le_parser.Evaluate();
+             integral_solver.h := h;
 //              integral_solver.b := StrToFloat(my_list[2]);
               if (my_list.Count = 4) then
                  integral_solver.Method:= StrToInt(my_list[3])
@@ -454,6 +457,7 @@ begin
             integral_solver.b:= le_parser.Evaluate();
 //            integral_solver.a := StrToFloat(my_list[2]);
 //            integral_solver.b := StrToFloat(my_list[3]);
+              integral_solver.h := h;
             if (my_list.Count = 5) then
                integral_solver.Method:= StrToInt(my_list[4])
             else
@@ -565,6 +569,79 @@ begin
             Result := res;
 end;
 
+function Tform1.finding_edo(my_list: TStringList): Real;
+var
+  func, temp: String;
+  res: Real;
+  xmin, xmax, x: Real;
+  i: Integer;
+  edo_solver: TEdo;
+begin
+  Chart1.Visible:= True;
+
+              edo_solver :=  TEdo.create();
+              edo_solver.parser := le_parser;
+              //edoPlotter.Clear;
+              edo_solver.func_d:= find_string(Copy( my_list[0], 2, Length(my_list[0]) - 2) );
+              le_parser.Expression:= my_list[1];
+              edo_solver.a := le_parser.Evaluate();
+              edo_solver.x_0 := le_parser.Evaluate();
+
+              le_parser.Expression:= my_list[2];
+              edo_solver.y_0 := le_parser.Evaluate();
+
+              le_parser.Expression:= my_list[3];
+              edo_solver.b:= le_parser.Evaluate();
+{              edo_solver.a := StrToFloat(my_list[1]);
+              edo_solver.x_0 := StrToFloat(my_list[1]);
+              edo_solver.y_0:= StrToFloat(my_list[2]);
+              edo_solver.b := StrToFloat(my_list[3]); }
+              edo_solver.h:= h;
+              if (my_list.Count = 5) then
+                 edo_solver.method := StrToInt(my_list[4])
+              else
+                  edo_solver.method:= 3;
+              res := edo_solver.Execute();
+              //le_parser.Expression:= my_list[1];
+
+              LineSeries := TLineseries.Create( Chart1 );
+
+              for i:= 0 to Length(edo_solver.xn_s) - 1 do begin
+                LineSeries.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
+              end;
+
+              LineSeries.ShowLines:= True;
+              LineSeries.LinePen.Color:= clBlue;
+              LineSeries.Active:= True;
+
+              Chart1.AddSeries( LineSeries );
+
+
+              {for i:= 0 to Length(edo_solver.xn_s) - 1 do begin
+                edoPlotter.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
+              end; }
+
+              //edoPlotter.Active:= True;
+
+              if (edo_solver.a > edo_solver.b) then begin
+                  Chart1.Extent.XMin := edo_solver.b;
+                  Chart1.Extent.XMax := edo_solver.a;
+              end else begin
+                Chart1.Extent.XMin := edo_solver.a;
+                Chart1.Extent.XMax := edo_solver.b;
+              end;
+
+              memHistorial.Text:= memHistorial.Text + func + LineEnding;
+              memHistorial.Text:= memHistorial.Text + 'Resultado EDO: ' + FloatToStr(res) + '.' + LineEnding;
+
+              ShowMessage('edo(df,x0,y0,obj,method): plottea la funcion primitiva');
+
+              Result := res;
+
+              edo_solver.Destroy;
+
+end;
+
 function Tform1.CreatingStrings(Input: string): String;
 var
   my_list: TStringList;
@@ -585,11 +662,15 @@ begin
   case func of
        'polyroot': begin
             Result := finding_polyroot(my_list);
+            Exit;
           end;
           'polynomial': begin
             Result := finding_lagrange(my_list);
+            Exit;
           end;
   end;
+
+  Result := Input;
 
 end;
 
@@ -630,57 +711,12 @@ begin
             Exit;
           end;
           'edo': begin
-            Chart1.Visible:= True;
-
-            edo_solver :=  TEdo.create();
-            edo_solver.parser := le_parser;
-            //edoPlotter.Clear;
-            edo_solver.func_d:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            edo_solver.a := StrToFloat(my_list[1]);
-            edo_solver.x_0 := StrToFloat(my_list[1]);
-            edo_solver.y_0:= StrToFloat(my_list[2]);
-            edo_solver.b := StrToFloat(my_list[3]);
-            if (my_list.Count = 5) then
-               edo_solver.method := StrToInt(my_list[4])
-            else
-                edo_solver.method:= 3;
-            res := edo_solver.Execute();
-            //le_parser.Expression:= my_list[1];
-
-            LineSeries := TLineseries.Create( Chart1 );
-
-            for i:= 0 to Length(edo_solver.xn_s) - 1 do begin
-              LineSeries.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
-            end;
-
-            LineSeries.ShowLines:= True;
-            LineSeries.LinePen.Color:= clBlue;
-            LineSeries.Active:= True;
-
-            Chart1.AddSeries( LineSeries );
-
-
-            if (edo_solver.a > edo_solver.b) then begin
-                Chart1.Extent.XMin := edo_solver.b;
-                Chart1.Extent.XMax := edo_solver.a;
-            end else begin
-              Chart1.Extent.XMin := edo_solver.a;
-              Chart1.Extent.XMax := edo_solver.b;
-            end;
-
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Resultado EDO: ' + FloatToStr(res) + '.' + LineEnding;
-
-            ShowMessage('edo(df,x0,y0,obj,method): plottea la funcion primitiva');
-
-            edo_solver.Destroy;
-
-            Result := res;
+            Result := finding_edo(my_list);
             Exit;
           end;
      end;
-
-     Result := StrToFloat(Input);
+     le_parser.Expression:= Input;
+     Result := le_parser.Evaluate();
 
 end;
 
@@ -757,17 +793,24 @@ begin
           end;
 
           'update': begin
-            for i := 1 to StringGrid1.ColCount - 1 do begin
+            iPos := 0;
+            while (names[iPos] <> my_list[0]) do begin
+              iPos := iPos + 1;
+            end;
+
+            le_parser.Expression:= my_list[1];
+            values[iPos] := le_parser.Evaluate();
+            le_parser.NewValue(my_list[0], values[iPos]);
+
+            for i := 1 to current_var do begin
               if ( StringGrid1.Cells[0,i] = my_list[0] ) then begin
                 iPos := i;
                 Break;
               end;
             end;
-            values[iPos-1] := StrToFloat(my_list[1]);
+            //values[iPos-1] := StrToFloat(my_list[1]);
 
-            StringGrid1.Cells[2,i] := my_list[1];
-
-            le_parser.NewValue(my_list[0], values[iPos-1]);
+            StringGrid1.Cells[2,iPos] := FloatToStr(le_parser.Evaluate());
 
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
             memHistorial.Text:= memHistorial.Text + 'variable ' + my_list[0] + ' actualizada con valor ' + my_list[1]
@@ -885,6 +928,7 @@ begin
             senl_solver := NLSystems.create;
             Chart1.Visible:= False;
             senl_solver.Parse := le_parser;
+            senl_solver.ErrorAllowed:= h;
             array_list := TStringList.Create;
             temp := Trim(my_list[1]);
             iPos := Pos( ']', temp);
@@ -940,6 +984,8 @@ begin
 
             current_func:= root_finder.func;
             current_func2:= root_finder.func2;
+
+            root_finder.ErrorAllowed:= h;
 
             le_parser.Expression:= my_list[2];
 //            root_finder.a := StrToFloat(my_list[2]);
@@ -1035,176 +1081,10 @@ begin
             //ShowMessage('integral(f,a,b,method)'); SYNTAX
           end;
           'area': begin
-{            ShowMessage('area(f,g,a,b,method=1): halla y grafica el área. f = blue, g = red');
-            integral_solver := TIntegralMethods.create;
-            integral_solver.func:= Copy(my_list[0], 2, Length(my_list[0]) - 2) + ' - (' +
-                                   Copy(my_list[1], 2, Length(my_list[1]) - 2) + ')';
-            integral_solver.a := StrToFloat(my_list[2]);
-            integral_solver.b := StrToFloat(my_list[3]);
-            if (my_list.Count = 5) then
-               integral_solver.Method:= StrToInt(my_list[4])
-            else
-                integral_solver.Method:= 2;
-            integral_solver.area:= True;
-
-            current_func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            current_func2:= Copy(my_list[1], 2, Length(my_list[1]) - 2);
-
-            integral_solver.Parse := le_parser;
-
-            res := integral_solver.Execute();
-
-            xmin:= integral_solver.a;
-            xmax:= integral_solver.b;
-
-            le_area := TAreaSeries.Create(Chart1);
-            le_area_inter := TAreaSeries.Create(Chart1);
-
-            le_area.UseZeroLevel:= True;
-            le_area.AreaBrush.Color:= clGreen;
-            le_area.AreaContourPen.Color:= clRed;
-            le_area.AreaContourPen.Style:= psDot;
-            le_area.AreaContourPen.Width:= 3;
-            le_area.AreaLinesPen.Style:= psClear;
-
-            le_area_inter.UseZeroLevel:= True;
-            le_area_inter.AreaBrush.Color:= clYellow;
-            le_area_inter.AreaContourPen.Color:= clBlue;
-            le_area_inter.AreaContourPen.Style:= psDot;
-            le_area_inter.AreaContourPen.Width:= 3;
-            le_area_inter.AreaLinesPen.Style:= psClear;
-
-            //function f
-            x := xmin;
-            LineSeries := TLineseries.Create( Chart1 );
-
-            le_parser.Expression:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-
-            with LineSeries do begin
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-
-                       if (f(x) >= f2(x)) then begin
-                          le_area.AddXY(x, f(x));
-                          le_area_inter.AddXY(x, f2(x));
-                       end
-                       else begin
-                           le_area.AddXY(x, f2(x));
-                           le_area_inter.AddXY(x, f(x));
-                       end;
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-            le_area.Active:= True;
-            le_area_inter.Active:= True;
-
-            LineSeries.ShowLines:= True;
-            LineSeries.LinePen.Color:= clBlue;
-            LineSeries.Active:= True;
-
-            Chart1.AddSeries( LineSeries );
-
-            //function g
-
-            x := xmin;
-            LineSeries := TLineseries.Create( Chart1 );
-
-            le_parser.Expression:= Copy(my_list[1], 2, Length(my_list[1]) - 2);
-
-            with LineSeries do begin
-                 ShowLines:= True;
-                 LinePen.Color:= clRed;
-                 Active:= True;
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-                       //le_area.AddXY(x, le_parser.Evaluate());
-                       if (f(x) > f2(x)) then
-                          le_area.AddXY(x, f(x))
-                       else
-                          le_area.AddXY(x, f2(x));
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-
-            Chart1.AddSeries(LineSeries);
-
-            Chart1.AddSeries( le_area );
-            Chart1.AddSeries(le_area_inter);
-
-            Chart1.Proportional:= False;
-            Chart1.Extent.XMin := StrToFloat(my_list[2]);
-            Chart1.Extent.XMax := StrToFloat(my_list[3]);
-
-            Chart1.Visible:= True;
-
-            ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Resultado Integral: ' + FloatToStr(res) + ' unidades.' + LineEnding;
-            }
             finding_area(my_list);
-
           end;
           'edo': begin
-            Chart1.Visible:= True;
-
-            edo_solver :=  TEdo.create();
-            edo_solver.parser := le_parser;
-            //edoPlotter.Clear;
-            edo_solver.func_d:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            edo_solver.a := StrToFloat(my_list[1]);
-            edo_solver.x_0 := StrToFloat(my_list[1]);
-            edo_solver.y_0:= StrToFloat(my_list[2]);
-            edo_solver.b := StrToFloat(my_list[3]);
-            if (my_list.Count = 5) then
-               edo_solver.method := StrToInt(my_list[4])
-            else
-                edo_solver.method:= 3;
-            res := edo_solver.Execute();
-            //le_parser.Expression:= my_list[1];
-
-            LineSeries := TLineseries.Create( Chart1 );
-
-            for i:= 0 to Length(edo_solver.xn_s) - 1 do begin
-              LineSeries.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
-            end;
-
-            LineSeries.ShowLines:= True;
-            LineSeries.LinePen.Color:= clBlue;
-            LineSeries.Active:= True;
-
-            Chart1.AddSeries( LineSeries );
-
-
-            {for i:= 0 to Length(edo_solver.xn_s) - 1 do begin
-              edoPlotter.AddXY(edo_solver.xn_s[i], edo_solver.yn_s[i]);
-            end; }
-
-            //edoPlotter.Active:= True;
-
-            if (edo_solver.a > edo_solver.b) then begin
-                Chart1.Extent.XMin := edo_solver.b;
-                Chart1.Extent.XMax := edo_solver.a;
-            end else begin
-              Chart1.Extent.XMin := edo_solver.a;
-              Chart1.Extent.XMax := edo_solver.b;
-            end;
-
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Resultado EDO: ' + FloatToStr(res) + '.' + LineEnding;
-
-            ShowMessage('edo(df,x0,y0,obj,method): plottea la funcion primitiva');
-
-            edo_solver.Destroy;
+            finding_edo(my_list);
           end;
      end;
 //  Chart1FuncSeries1.Extent.UseXMin := False;
@@ -1218,9 +1098,12 @@ begin
               Chart1.ClearSeries;
 //              Chart1.Refresh;
             end;
-            'help': begin ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding +
-          'update(var_name, var_value): actualiza el valor de una variable' + LineEnding
-          + 'root(f;a;b;method;true/false): f es la función, a y b el intervalo, los métodos pueden ser: ' +
+            'help': begin ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding
+            + 'create(var_name, var_value): crea una variable de tipo Real/Float. Puede guardar funciones de tipo:'
+            + 'root (si se hallan todas las raices guarda la ultima), integral, area y edo.'+ LineEnding
+         + 'update(var_name, var_value): actualiza el valor de una variable' + LineEnding
+           +'create_s(var_name, var_value): crea una variable de tipo string. Puede guardar funciones de polynomial y polyroot' + LineEnding
+          + 'root(f;a;b;true/false;method): f es la función, a y b el intervalo, los métodos pueden ser: ' +
            'Biseccion (0), Falsa Posicion (1), Secante (2). True (1) o False (0)' +
             ' te dice si puedes hallar todas las raíces.'+ LineEnding
             + 'plot2d(f;a;b;color): f es la funcion, [a,b] el intervalo donde será graficado,' +
@@ -1228,7 +1111,7 @@ begin
             + 'polyroot([1,3,4,2]): Halla un polinomio con las raíces dadas.' + LineEnding
             + 'polynomial([1,2,3];[3,-3,4]): devuelve una función dados unos puntos. ' +
             'Primer array: valores en x. Segundo array: valores en y.' + LineEnding
-            + 'SENL: WIP' + LineEnding
+            + 'senl([variables];[ecuaciones];[valores_iniciales]): resuelve el sistema de ecuaciones propuesto.' + LineEnding
             + 'intersection(f,g,a,b,color1,color2): halla la intersección entre dos funciones. '
             + 'f y g son funciones, a y b el intervalo donde va a hallar la o las intersecciones, '
             + 'color1 y color2 son los colores de f y g respectivamente.' + LineEnding
