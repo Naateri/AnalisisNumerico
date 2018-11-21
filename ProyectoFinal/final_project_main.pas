@@ -76,7 +76,11 @@ type
     function find_string(Input: string): String;
     function f(x:Real): Real;
     function f2(x:Real): Real;
-    procedure finding_roots(resu: Real; my_list: TStringList);
+    function finding_roots(my_list: TStringList): Real;
+    function finding_polyroot(my_list: TStringList): String;
+    function finding_lagrange(my_list: TStringList): String;
+    function finding_integral(my_list: TStringList): Real;
+    function finding_area(my_list: TStringList): Real;
   private
     h: Real;
     values: array of Real; //integer/real variables
@@ -85,6 +89,7 @@ type
     s_names: array of String; //string variables names
     le_parser: TParseMath;
     current_var: Integer;
+    current_real, current_string: Integer;
 
     { private declarations }
   public
@@ -177,10 +182,12 @@ begin
   end;
 
   current_var:= 2;
+  current_string:=0;
+  current_real:=2;
 
 end;
 
-procedure TForm1.finding_roots(resu: Real; my_list: TStringList);
+function TForm1.finding_roots(my_list: TStringList): Real;
 var
   root_finder: TNLEMethods;
   res: Real;
@@ -254,10 +261,308 @@ root_finder.func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) );
                 memHistorial.Text:= memHistorial.Text + 'Root: ' + FloatToStr( res ) + LineEnding;
             end;
             LineSeries.ShowPoints:= True;
+            LineSeries.ShowLines:= False;
             Chart1.AddSeries(LineSeries);
             Chart1.Visible:= True;
+            Result := res;
             //root_finder.Destroy;
 
+end;
+
+function TForm1.finding_polyroot(my_list: TStringList): String;
+var
+  array_list: TStringList;
+  func, temp: String;
+  iPos, i: Integer;
+  lagrange_solver: TLagrange;
+  pts: array of array of Real;
+begin
+     lagrange_solver := TLagrange.create;
+            array_list := TStringList.Create;
+            temp := Trim(my_list[0]);
+            iPos := Pos( ']', temp);
+            array_list.Delimiter:= ',';
+            array_list.StrictDelimiter:= True;
+            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+            lagrange_solver.num_points:= array_list.Count;
+            SetLength(pts, lagrange_solver.num_points, 2);
+
+            for iPos := 0 to array_list.Count - 1 do
+                pts[iPos][0] := StrToFloat(array_list[iPos]);
+                //ShowMessage('Valor: ' + array_list[iPos]);
+            //copy values to create the polynomial
+
+            array_list.Destroy;
+            lagrange_solver.points := pts;
+
+            current_func := lagrange_solver.polyroot_text();
+            Chart1.Proportional:= False;
+            Chart1.Visible:= False;
+
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
+            Result := current_func;
+
+            ShowMessage('polyroot([raices]). Raices de un polinomio.');
+end;
+
+function TForm1.finding_lagrange(my_list: TStringList): String;
+var
+  array_list: TStringList;
+  func, temp: String;
+  iPos, i: Integer;
+  lagrange_solver: TLagrange;
+  pts: array of array of Real;
+begin
+  lagrange_solver := TLagrange.create;
+              array_list := TStringList.Create;
+              temp := Trim(my_list[0]);
+              iPos := Pos( ']', temp);
+              array_list.Delimiter:= ',';
+              array_list.StrictDelimiter:= True;
+              array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+              lagrange_solver.num_points:= array_list.Count;
+              SetLength(pts, lagrange_solver.num_points, 2);
+
+              for iPos := 0 to array_list.Count - 1 do begin
+                pts[iPos][0] := StrToFloat(array_list[iPos]);
+              end;
+              //copy x values to Lagrange
+
+  //            ShowMessage('polynomial([1,3,5],[4,2,3]). LaGrange.'); SYNTAX
+                array_list.Clear;
+              temp := Trim(my_list[1]);
+              iPos := Pos( ']', temp);
+              array_list.Delimiter:= ',';
+              array_list.StrictDelimiter:= True;
+              array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+
+              for iPos := 0 to array_list.Count - 1 do begin
+  //                ShowMessage('Valor: ' + array_list[iPos]);
+                  pts[iPos][1] := StrToFloat(array_list[iPos]);
+              end;
+              //array_list.Sort; //to get min and max
+              //copy y values to Lagrange
+
+              array_list.Destroy;
+              lagrange_solver.points := pts;
+
+              current_func := lagrange_solver.find_text();
+              current_func2:= current_func;
+              Chart1.Visible:= False;
+
+              memHistorial.Text:= memHistorial.Text + func + LineEnding;
+              memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
+              Result := current_func;
+end;
+
+function TForm1.finding_integral(my_list: TStringList): Real;
+var
+  func, temp: String;
+  res: Real;
+  xmin, xmax, x: Real;
+  integral_solver: TIntegralMethods;
+begin
+     integral_solver := TIntegralMethods.create;
+              integral_solver.func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) );
+              le_parser.Expression:= my_list[1];
+//integral_solver.a := StrToFloat(my_list[1]);
+             integral_solver.a := le_parser.Evaluate();
+             le_parser.Expression:= my_list[2];
+             integral_solver.b:= le_parser.Evaluate();
+//              integral_solver.b := StrToFloat(my_list[2]);
+              if (my_list.Count = 4) then
+                 integral_solver.Method:= StrToInt(my_list[3])
+              else
+                  integral_solver.Method:= 2;
+
+              current_func:= integral_solver.func;
+//              current_func2:= my_list[1];
+
+              integral_solver.Parse := le_parser;
+
+              res := integral_solver.Execute();
+
+              xmin:= integral_solver.a;
+              xmax:= integral_solver.b;
+
+              LineSeries := TLineseries.Create( Chart1 );
+              le_area := TAreaSeries.Create(Chart1);
+              x := xmin;
+
+              Chart1.Extent.XMin := xmin;
+              Chart1.Extent.XMax := xmax;
+
+              le_area.UseZeroLevel:= True;
+              le_area.AreaBrush.Color:= clGreen;
+              le_area.AreaContourPen.Color:= clRed;
+              le_area.AreaContourPen.Style:= psDot;
+              le_area.AreaContourPen.Width:= 3;
+              le_area.AreaLinesPen.Style:= psClear;
+
+              le_parser.Expression:= integral_solver.func;
+
+              with LineSeries do begin
+                   repeat
+                         le_parser.NewValue('x', x);
+                         if (le_parser.Evaluate() = NaN) then begin
+                            x := x + 0.01;
+                            Continue;
+                         end;
+                         AddXY(x, le_parser.Evaluate());
+                         le_area.AddXY(x, le_parser.Evaluate());
+                         x := x + 0.01;
+                   until (x >= xmax);
+              end;
+
+              le_area.Active:= True;
+
+              LineSeries.ShowLines:= True;
+              LineSeries.LinePen.Color:= clRed;
+              LineSeries.Active:= True;
+
+              Chart1.AddSeries( LineSeries );
+              Chart1.AddSeries( le_area );
+
+              Chart1.Proportional:= False;
+
+              Chart1.Visible:= True;
+
+  //            functions.Add(LineSeries);
+
+              ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
+              memHistorial.Text:= memHistorial.Text + func + LineEnding;
+              memHistorial.Text:= memHistorial.Text + 'Resultado Integral: ' + FloatToStr(res) + ' unidades.' + LineEnding;
+
+              Result := res;
+end;
+
+function Tform1.finding_area(my_list: TStringList): Real;
+var
+  func, temp: String;
+  res: Real;
+  xmin, xmax, x: Real;
+  integral_solver: TIntegralMethods;
+begin
+//     ShowMessage('area(f,g,a,b,method=1): halla y grafica el área. f = blue, g = red');
+            integral_solver := TIntegralMethods.create;
+            integral_solver.func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) ) + ' - (' +
+                                   find_string( Copy(my_list[1], 2, Length(my_list[1]) - 2) ) + ')';
+            le_parser.Expression:= my_list[2];
+            integral_solver.a:= le_parser.Evaluate();
+            le_parser.Expression:= my_list[3];
+            integral_solver.b:= le_parser.Evaluate();
+//            integral_solver.a := StrToFloat(my_list[2]);
+//            integral_solver.b := StrToFloat(my_list[3]);
+            if (my_list.Count = 5) then
+               integral_solver.Method:= StrToInt(my_list[4])
+            else
+                integral_solver.Method:= 2;
+            integral_solver.area:= True;
+
+            current_func:= find_string (Copy(my_list[0], 2, Length(my_list[0]) - 2) );
+            current_func2:= find_string (Copy(my_list[1], 2, Length(my_list[1]) - 2) );
+
+            integral_solver.Parse := le_parser;
+
+            res := integral_solver.Execute();
+
+            xmin:= integral_solver.a;
+            xmax:= integral_solver.b;
+
+            {le_area := TAreaSeries.Create(Chart1);
+            le_area_inter := TAreaSeries.Create(Chart1);
+
+            le_area.UseZeroLevel:= True;
+            le_area.AreaBrush.Color:= clGreen;
+            le_area.AreaContourPen.Color:= clRed;
+            le_area.AreaContourPen.Style:= psDot;
+            le_area.AreaContourPen.Width:= 3;
+            le_area.AreaLinesPen.Style:= psClear;
+
+            le_area_inter.UseZeroLevel:= True;
+            le_area_inter.AreaBrush.Color:= clYellow;
+            le_area_inter.AreaContourPen.Color:= clBlue;
+            le_area_inter.AreaContourPen.Style:= psDot;
+            le_area_inter.AreaContourPen.Width:= 3;
+            le_area_inter.AreaLinesPen.Style:= psClear; }
+            //function f
+            x := xmin;
+            LineSeries := TLineseries.Create( Chart1 );
+
+            le_parser.Expression:= current_func;
+
+            with LineSeries do begin
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+
+                       {if (f(x) >= f2(x)) then begin
+                          le_area.AddXY(x, f(x));
+                          le_area_inter.AddXY(x, f2(x));
+                       end
+                       else begin
+                           le_area.AddXY(x, f2(x));
+                           le_area_inter.AddXY(x, f(x));
+                       end; }
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+{            le_area.Active:= True;
+            le_area_inter.Active:= True; }
+
+            LineSeries.ShowLines:= True;
+            LineSeries.LinePen.Color:= clBlue;
+            LineSeries.Active:= True;
+
+            Chart1.AddSeries( LineSeries );
+
+            //function g
+
+            x := xmin;
+            LineSeries := TLineseries.Create( Chart1 );
+
+            le_parser.Expression:= current_func2;
+
+            with LineSeries do begin
+                 ShowLines:= True;
+                 LinePen.Color:= clRed;
+                 Active:= True;
+                 repeat
+                       le_parser.NewValue('x', x);
+                       if (le_parser.Evaluate() = NaN) then begin
+                          x := x + 0.01;
+                          Continue;
+                       end;
+                       AddXY(x, le_parser.Evaluate());
+                       //le_area.AddXY(x, le_parser.Evaluate());
+                       {if (f(x) > f2(x)) then
+                          le_area.AddXY(x, f(x))
+                       else
+                          le_area.AddXY(x, f2(x)); }
+                       x := x + 0.01;
+                 until (x >= xmax);
+            end;
+
+            Chart1.AddSeries(LineSeries);
+
+{            Chart1.AddSeries( le_area );
+            Chart1.AddSeries(le_area_inter); }
+
+            Chart1.Proportional:= False;
+            Chart1.Extent.XMin := xmin;
+            Chart1.Extent.XMax := xmax;
+
+            Chart1.Visible:= True;
+
+            ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
+            memHistorial.Text:= memHistorial.Text + func + LineEnding;
+            memHistorial.Text:= memHistorial.Text + 'Resultado Integral: ' + FloatToStr(res) + ' unidades.' + LineEnding;
+            Result := res;
 end;
 
 function Tform1.CreatingStrings(Input: string): String;
@@ -279,75 +584,10 @@ begin
 
   case func of
        'polyroot': begin
-            lagrange_solver := TLagrange.create;
-            array_list := TStringList.Create;
-            temp := Trim(my_list[0]);
-            iPos := Pos( ']', temp);
-            array_list.Delimiter:= ',';
-            array_list.StrictDelimiter:= True;
-            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
-            lagrange_solver.num_points:= array_list.Count;
-            SetLength(pts, lagrange_solver.num_points, 2);
-
-            for iPos := 0 to array_list.Count - 1 do
-                pts[iPos][0] := StrToFloat(array_list[iPos]);
-                //ShowMessage('Valor: ' + array_list[iPos]);
-            //copy values to create the polynomial
-
-            array_list.Destroy;
-            lagrange_solver.points := pts;
-
-            Result := lagrange_solver.polyroot_text();
-
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
-
-            ShowMessage('polyroot([1,3,5,8]). Raices de un polinomio.');
+            Result := finding_polyroot(my_list);
           end;
           'polynomial': begin
-            lagrange_solver := TLagrange.create;
-            array_list := TStringList.Create;
-            temp := Trim(my_list[0]);
-            iPos := Pos( ']', temp);
-            array_list.Delimiter:= ',';
-            array_list.StrictDelimiter:= True;
-            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
-            lagrange_solver.num_points:= array_list.Count;
-            SetLength(pts, lagrange_solver.num_points, 2);
-
-            for iPos := 0 to array_list.Count - 1 do begin
-              pts[iPos][0] := StrToFloat(array_list[iPos]);
-            //  ShowMessage('Valor: ' + array_list[iPos]);
-            end;
-            //copy x values to Lagrange
-
-//            ShowMessage('polynomial([1,3,5],[4,2,3]). LaGrange.'); SYNTAX
-              array_list.Clear;
-            temp := Trim(my_list[1]);
-            iPos := Pos( ']', temp);
-            array_list.Delimiter:= ',';
-            array_list.StrictDelimiter:= True;
-            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
-
-            for iPos := 0 to array_list.Count - 1 do begin
-//                ShowMessage('Valor: ' + array_list[iPos]);
-                pts[iPos][1] := StrToFloat(array_list[iPos]);
-            end;
-            array_list.Sort; //to get min and max
-            //copy y values to Lagrange
-
-            array_list.Destroy;
-            lagrange_solver.points := pts;
-
-            current_func := lagrange_solver.find_text();
-            current_func2:= current_func;
-            Chart1.Visible:= False;
-
-            Result := current_func;
-
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
-
+            Result := finding_lagrange(my_list);
           end;
   end;
 
@@ -378,197 +618,16 @@ begin
 
   case func of
           'root': begin
-            finding_roots(Result, my_list);
+            Result := finding_roots(my_list);
             Exit;
           end;
-
           'integral': begin
-            integral_solver := TIntegralMethods.create;
-            integral_solver.func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            integral_solver.a := StrToFloat(my_list[1]);
-            integral_solver.b := StrToFloat(my_list[2]);
-            if (my_list.Count = 4) then
-               integral_solver.Method:= StrToInt(my_list[3])
-            else
-                integral_solver.Method:= 2;
-
-            current_func:= my_list[0];
-            current_func2:= my_list[1];
-
-            integral_solver.Parse := le_parser;
-
-            le_parser.Expression:= my_list[0];
-
-            res := integral_solver.Execute();
-
-            xmin:= integral_solver.a;
-            xmax:= integral_solver.b;
-
-            LineSeries := TLineseries.Create( Chart1 );
-            le_area := TAreaSeries.Create(Chart1);
-            x := xmin;
-
-            le_area.UseZeroLevel:= True;
-            le_area.AreaBrush.Color:= clGreen;
-            le_area.AreaContourPen.Color:= clRed;
-            le_area.AreaContourPen.Style:= psDot;
-            le_area.AreaContourPen.Width:= 3;
-            le_area.AreaLinesPen.Style:= psClear;
-
-            with LineSeries do begin
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-                       le_area.AddXY(x, le_parser.Evaluate());
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-
-            Chart1.Extent.XMin := StrToFloat(my_list[1]);
-            Chart1.Extent.XMax := StrToFloat(my_list[2]);
-
-            le_area.Active:= True;
-
-            LineSeries.ShowLines:= True;
-            LineSeries.LinePen.Color:= clRed;
-            LineSeries.Active:= True;
-
-            Chart1.AddSeries( LineSeries );
-            Chart1.AddSeries( le_area );
-
-            Chart1.Proportional:= False;
-
-            Chart1.Visible:= True;
-
-            ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Resultado Integral: ' + FloatToStr(res) + ' unidades.' + LineEnding;
-            Result := res;
+            Result := finding_integral(my_list);
             Exit;
           end;
           'area': begin
-            ShowMessage('area(f,g,a,b,method=1): halla y grafica el área. f = blue, g = red');
-            integral_solver := TIntegralMethods.create;
-            integral_solver.func:= Copy(my_list[0], 2, Length(my_list[0]) - 2) + ' - (' +
-                                   Copy(my_list[1], 2, Length(my_list[1]) - 2) + ')';
-            integral_solver.a := StrToFloat(my_list[2]);
-            integral_solver.b := StrToFloat(my_list[3]);
-            if (my_list.Count = 5) then
-               integral_solver.Method:= StrToInt(my_list[4])
-            else
-                integral_solver.Method:= 2;
-            integral_solver.area:= True;
-
-            current_func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            current_func2:= Copy(my_list[1], 2, Length(my_list[1]) - 2);
-
-            integral_solver.Parse := le_parser;
-
-            res := integral_solver.Execute();
-
-            xmin:= integral_solver.a;
-            xmax:= integral_solver.b;
-
-            le_area := TAreaSeries.Create(Chart1);
-            le_area_inter := TAreaSeries.Create(Chart1);
-
-            le_area.UseZeroLevel:= True;
-            le_area.AreaBrush.Color:= clGreen;
-            le_area.AreaContourPen.Color:= clRed;
-            le_area.AreaContourPen.Style:= psDot;
-            le_area.AreaContourPen.Width:= 3;
-            le_area.AreaLinesPen.Style:= psClear;
-
-            le_area_inter.UseZeroLevel:= True;
-            le_area_inter.AreaBrush.Color:= clYellow;
-            le_area_inter.AreaContourPen.Color:= clBlue;
-            le_area_inter.AreaContourPen.Style:= psDot;
-            le_area_inter.AreaContourPen.Width:= 3;
-            le_area_inter.AreaLinesPen.Style:= psClear;
-
-            //function f
-            x := xmin;
-            LineSeries := TLineseries.Create( Chart1 );
-
-            le_parser.Expression:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-
-            with LineSeries do begin
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-
-                       if (f(x) >= f2(x)) then begin
-                          le_area.AddXY(x, f(x));
-                          le_area_inter.AddXY(x, f2(x));
-                       end
-                       else begin
-                           le_area.AddXY(x, f2(x));
-                           le_area_inter.AddXY(x, f(x));
-                       end;
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-            le_area.Active:= True;
-            le_area_inter.Active:= True;
-
-            LineSeries.ShowLines:= True;
-            LineSeries.LinePen.Color:= clBlue;
-            LineSeries.Active:= True;
-
-            Chart1.AddSeries( LineSeries );
-
-            //function g
-
-            x := xmin;
-            LineSeries := TLineseries.Create( Chart1 );
-
-            le_parser.Expression:= Copy(my_list[1], 2, Length(my_list[1]) - 2);
-
-            with LineSeries do begin
-                 ShowLines:= True;
-                 LinePen.Color:= clRed;
-                 Active:= True;
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-                       //le_area.AddXY(x, le_parser.Evaluate());
-                       if (f(x) > f2(x)) then
-                          le_area.AddXY(x, f(x))
-                       else
-                          le_area.AddXY(x, f2(x));
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-
-            Chart1.AddSeries(LineSeries);
-
-            Chart1.AddSeries( le_area );
-            Chart1.AddSeries(le_area_inter);
-
-            Chart1.Proportional:= False;
-            Chart1.Extent.XMin := StrToFloat(my_list[2]);
-            Chart1.Extent.XMax := StrToFloat(my_list[3]);
-
-            Chart1.Visible:= True;
-
-            ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Resultado Integral: ' + FloatToStr(res) + ' unidades.' + LineEnding;
-            Result := res;
+            Result := finding_area(my_list);
             Exit;
-
           end;
           'edo': begin
             Chart1.Visible:= True;
@@ -630,12 +689,13 @@ var
   index: Integer;
 begin
      index := 0;
-     while s_names[index] <> '' do begin
+     while index < current_string do begin
        if s_names[index] = Input then begin
           Result := s_values[index];
           Exit;
           Break;
        end;
+       index := index + 1;
      end;
      Result := Input; //string was not created
 end;
@@ -736,36 +796,39 @@ begin
             FloatToStr(values[iPos]) + '.' + LineEnding;
 
             current_var := current_var + 1;
+            current_real:= current_real + 1;
 
           end;
 
           'create_s': begin //create_s(name, value)
             Chart1.Visible:= False;
             iPos := 0;
-            while (s_names[iPos] <> '') do begin
+            {while (s_names[iPos] <> '') do begin
               iPos := iPos + 1;
-            end;
+            end;}
 
-            s_names[iPos] := my_list[0];
+            //ShowMessage('Current String: ' + IntToStr(current_string));
+            s_names[current_string] := my_list[0];
             for i := 2 to my_list.Count - 1 do
                 my_list[1] := my_list[1] + ';' + my_list[i];
 
-            s_values[iPos] := CreatingStrings(my_list[1]);
+            s_values[current_string] := CreatingStrings(my_list[1]);
 
             StringGrid1.Cells[0,current_var+1] := my_list[0];
             StringGrid1.Cells[1,current_var+1] := 'String';
             StringGrid1.Cells[2,current_var+1] := s_values[iPos];
 
             memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Variable ' + my_list[0] + ' creada con valor ' + s_values[iPos] + '.'
+            memHistorial.Text:= memHistorial.Text + 'Variable ' + my_list[0] + ' creada con valor ' + s_values[current_string] + '.'
             + LineEnding;
 
             current_var := current_var + 1;
+            current_string := current_string + 1;
 
           end;
 
           'root': begin
-            finding_roots(res, my_list);
+            finding_roots(my_list);
           end;
           'plot2d': begin
 //            Chart1.ClearSeries;
@@ -813,102 +876,10 @@ begin
 //            ShowMessage('Grafica. (f,a,b,color)'); SYNTAX
           end;
           'polyroot': begin
-            lagrange_solver := TLagrange.create;
-            array_list := TStringList.Create;
-            temp := Trim(my_list[0]);
-            iPos := Pos( ']', temp);
-            array_list.Delimiter:= ',';
-            array_list.StrictDelimiter:= True;
-            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
-            lagrange_solver.num_points:= array_list.Count;
-            SetLength(pts, lagrange_solver.num_points, 2);
-
-            for iPos := 0 to array_list.Count - 1 do
-                pts[iPos][0] := StrToFloat(array_list[iPos]);
-                //ShowMessage('Valor: ' + array_list[iPos]);
-            //copy values to create the polynomial
-
-            array_list.Destroy;
-            lagrange_solver.points := pts;
-
-            current_func := lagrange_solver.polyroot_text();
-{            current_func2:= current_func;
-            Chart1.Extent.UseYMax := True;
-            Chart1.Extent.UseYMax := True;
-            Chart1.Extent.XMax := 10;
-            Chart1.Extent.XMin := -10;}
-
-{            Chart1FuncSeries1.Active:= False;
-            Chart1FuncSeries2.Active:= False;
-            Chart1FuncSeries1.Pen.Color:= clBlue;
-            Chart1FuncSeries1.Active:= True; }
-
-//            Chart1.Visible:= True;
-            Chart1.Proportional:= True;
-            Chart1.Visible:= False;
-
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
-
-            ShowMessage('polyroot([1,3,5,8]). Raices de un polinomio.');
+            finding_polyroot(my_list);
           end;
           'polynomial': begin
-            lagrange_solver := TLagrange.create;
-            array_list := TStringList.Create;
-            temp := Trim(my_list[0]);
-            iPos := Pos( ']', temp);
-            array_list.Delimiter:= ',';
-            array_list.StrictDelimiter:= True;
-            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
-            lagrange_solver.num_points:= array_list.Count;
-            SetLength(pts, lagrange_solver.num_points, 2);
-
-            for iPos := 0 to array_list.Count - 1 do begin
-              pts[iPos][0] := StrToFloat(array_list[iPos]);
-            //  ShowMessage('Valor: ' + array_list[iPos]);
-            end;
-            //copy x values to Lagrange
-
-//            ShowMessage('polynomial([1,3,5],[4,2,3]). LaGrange.'); SYNTAX
-              array_list.Clear;
-            temp := Trim(my_list[1]);
-            iPos := Pos( ']', temp);
-            array_list.Delimiter:= ',';
-            array_list.StrictDelimiter:= True;
-            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
-
-            for iPos := 0 to array_list.Count - 1 do begin
-//                ShowMessage('Valor: ' + array_list[iPos]);
-                pts[iPos][1] := StrToFloat(array_list[iPos]);
-            end;
-            array_list.Sort; //to get min and max
-            //copy y values to Lagrange
-
-            array_list.Destroy;
-            lagrange_solver.points := pts;
-
-            current_func := lagrange_solver.find_text();
-            current_func2:= current_func;
-            {Chart1.Extent.UseYMax := True;
-            Chart1.Extent.UseYMax := True;
-            Chart1.Extent.XMax := 10;
-            Chart1.Extent.XMin := -10;}
-            Chart1.Visible:= False;
-{            Chart1.Extent.XMin := pts[0][0];
-            Chart1.Extent.XMax := pts[lagrange_solver.num_points-1][0];
-            Chart1.Extent.YMin := pts[0][1];
-            Chart1.Extent.YMax := pts[lagrange_solver.num_points-1][1]; }
-{            Chart1FuncSeries1.Active:= False;
-            Chart1FuncSeries2.Active:= False;
-            Chart1FuncSeries1.Pen.Color:= clBlue;
-            Chart1FuncSeries1.Active:= True; }
-
-//            Chart1.Visible:= True;
-//            Chart1.Proportional:= True;
-
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'funcion: ' + current_func + LineEnding;
-
+            finding_lagrange(my_list);
           end;
           'senl': begin
             senl_solver := NLSystems.create;
@@ -924,11 +895,10 @@ begin
             SetLength(senl_solver.equations, 4);
 
             for iPos := 0 to array_list.Count - 1 do begin
-              senl_solver.equations[iPos] := Copy(array_list[iPos],2,Length(array_list[iPos])-2);
-//              ShowMessage('Valor: ' + array_list[iPos]);
+              senl_solver.equations[iPos] := find_string(Copy(array_list[iPos],2,Length(array_list[iPos])-2));
             end;
 
-            for i := iPos + 1 to 3 do
+            for i := iPos + 1 to 3 do //if less than 4 equations
                 senl_solver.equations[i] := 'x';
 
               array_list.Clear;
@@ -940,7 +910,9 @@ begin
             SetLength( senl_solver.starts, 4 );
 
             for iPos := 0 to array_list.Count - 1 do begin
-                senl_solver.starts[iPos] := StrToFloat(array_list[iPos]);
+                le_parser.Expression:= array_list[iPos];
+//                senl_solver.starts[iPos] := StrToFloat(array_list[iPos]);
+                  senl_solver.starts[iPos] := le_parser.Evaluate();
 //                ShowMessage('Valor: ' + array_list[iPos]);
             end;
 
@@ -954,35 +926,40 @@ begin
               memHistorial.Text:= memHistorial.Text + senl_solver.variables[i] + ': ' +
               FloatToStr(senl_final_result[i,0]) + LineEnding;
             end;
-
-
-            ShowMessage('SENL([f1,f2,f3], [x0, x1, x2]). Newton Raphson generalizado.');
+            ShowMessage('SENL([variables],[functions], [initial_values]). Newton Raphson generalizado.');
           end;
           'intersection': begin
 //            Chart1.ClearSeries;
             Chart1.Visible:= True;
             root_finder := TNLEMethods.create;
             root_finder.Parse := le_parser;
-            root_finder.func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            root_finder.func2:= Copy(my_list[1], 2, Length(my_list[1]) - 2);
+            root_finder.func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) );
+//            ShowMessage('Function: ' + root_finder.func);
+            root_finder.func2:= find_string( Copy(my_list[1], 2, Length(my_list[1]) - 2) );
+//            ShowMessage('Function2: ' + root_finder.func2);
 
-            current_func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            current_func2:= Copy(my_list[1], 2, Length(my_list[1]) - 2);
+            current_func:= root_finder.func;
+            current_func2:= root_finder.func2;
 
-            root_finder.a := StrToFloat(my_list[2]);
-            root_finder.b:= StrToFloat(my_list[3]);
+            le_parser.Expression:= my_list[2];
+//            root_finder.a := StrToFloat(my_list[2]);
+              root_finder.a:= le_parser.Evaluate();
+            le_parser.Expression:= my_list[3];
+//            root_finder.b:= StrToFloat(my_list[3]);
+              root_finder.b:= le_parser.Evaluate();
             root_finder.ErrorAllowed:= h;
+            xmin:= root_finder.a;
+            xmax := root_finder.b;
+            x := xmin;
+            Chart1.Extent.XMin := xmin;
+            Chart1.Extent.XMax := xmax;
 
             res := root_finder.Intersection();
             ShowMessage('Intersection: (' + FloatToStr(res) + ', ' + FloatToStr( root_finder.f2(res)) + ')' );
-            {my_point.X:= res;
-            my_point.Y:= root_finder.f(res);}
             Chart1.Proportional:= False;
 
             LineSeries := TLineseries.Create( Chart1 );
-            xmin:= StrToFloat(my_list[2]);
-            xmax := StrToFloat(my_list[3]);
-            x := xmin;
+
             le_parser.Expression:= current_func;
 
             with LineSeries do begin
@@ -997,8 +974,6 @@ begin
                  until (x >= xmax);
             end;
 
-            Chart1.Extent.XMin := StrToFloat(my_list[2]);
-            Chart1.Extent.XMax := StrToFloat(my_list[3]);
             LineSeries.ShowLines:= True;
             LineSeries.LinePen.Color:= StringToColor(my_list[4]);
             LineSeries.Active:= True;
@@ -1011,8 +986,8 @@ begin
             le_parser.Expression:= current_func2;
 
             LineSeries := TLineseries.Create( Chart1 );
-            xmin:= StrToFloat(my_list[2]);
-            xmax := StrToFloat(my_list[3]);
+            xmin:= Chart1.Extent.XMin;
+            xmax := Chart1.Extent.XMax;
             x := xmin;
 
             with LineSeries do begin
@@ -1056,193 +1031,11 @@ begin
 //            ' Todos los puntos.'); SYNTAX
           end;
           'integral': begin
-            integral_solver := TIntegralMethods.create;
-            integral_solver.func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            integral_solver.a := StrToFloat(my_list[1]);
-            integral_solver.b := StrToFloat(my_list[2]);
-            if (my_list.Count = 4) then
-               integral_solver.Method:= StrToInt(my_list[3])
-            else
-                integral_solver.Method:= 2;
-
-            current_func:= my_list[0];
-            current_func2:= my_list[1];
-
-            integral_solver.Parse := le_parser;
-
-            le_parser.Expression:= my_list[0];
-
-            res := integral_solver.Execute();
-
-            xmin:= integral_solver.a;
-            xmax:= integral_solver.b;
-
-            LineSeries := TLineseries.Create( Chart1 );
-            le_area := TAreaSeries.Create(Chart1);
-            x := xmin;
-
-            le_area.UseZeroLevel:= True;
-            le_area.AreaBrush.Color:= clGreen;
-            le_area.AreaContourPen.Color:= clRed;
-            le_area.AreaContourPen.Style:= psDot;
-            le_area.AreaContourPen.Width:= 3;
-            le_area.AreaLinesPen.Style:= psClear;
-
-            with LineSeries do begin
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-                       le_area.AddXY(x, le_parser.Evaluate());
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-
-            Chart1.Extent.XMin := StrToFloat(my_list[1]);
-            Chart1.Extent.XMax := StrToFloat(my_list[2]);
-
-            le_area.Active:= True;
-
-            LineSeries.ShowLines:= True;
-            LineSeries.LinePen.Color:= clRed;
-            LineSeries.Active:= True;
-
-            Chart1.AddSeries( LineSeries );
-            Chart1.AddSeries( le_area );
-
-            Chart1.Proportional:= False;
-
-            Chart1.Visible:= True;
-
-//            functions.Add(LineSeries);
-
-            ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Resultado Integral: ' + FloatToStr(res) + ' unidades.' + LineEnding;
-
+            finding_integral(my_list);
             //ShowMessage('integral(f,a,b,method)'); SYNTAX
           end;
           'area': begin
-            ShowMessage('area(f,g,a,b,method=1): halla y grafica el área. f = blue, g = red');
-            integral_solver := TIntegralMethods.create;
-            integral_solver.func:= Copy(my_list[0], 2, Length(my_list[0]) - 2) + ' - (' +
-                                   Copy(my_list[1], 2, Length(my_list[1]) - 2) + ')';
-            integral_solver.a := StrToFloat(my_list[2]);
-            integral_solver.b := StrToFloat(my_list[3]);
-            if (my_list.Count = 5) then
-               integral_solver.Method:= StrToInt(my_list[4])
-            else
-                integral_solver.Method:= 2;
-            integral_solver.area:= True;
-
-            current_func:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-            current_func2:= Copy(my_list[1], 2, Length(my_list[1]) - 2);
-
-            integral_solver.Parse := le_parser;
-
-            res := integral_solver.Execute();
-
-            xmin:= integral_solver.a;
-            xmax:= integral_solver.b;
-
-            le_area := TAreaSeries.Create(Chart1);
-            le_area_inter := TAreaSeries.Create(Chart1);
-
-            le_area.UseZeroLevel:= True;
-            le_area.AreaBrush.Color:= clGreen;
-            le_area.AreaContourPen.Color:= clRed;
-            le_area.AreaContourPen.Style:= psDot;
-            le_area.AreaContourPen.Width:= 3;
-            le_area.AreaLinesPen.Style:= psClear;
-
-            le_area_inter.UseZeroLevel:= True;
-            le_area_inter.AreaBrush.Color:= clYellow;
-            le_area_inter.AreaContourPen.Color:= clBlue;
-            le_area_inter.AreaContourPen.Style:= psDot;
-            le_area_inter.AreaContourPen.Width:= 3;
-            le_area_inter.AreaLinesPen.Style:= psClear;
-
-            //function f
-            x := xmin;
-            LineSeries := TLineseries.Create( Chart1 );
-
-            le_parser.Expression:= Copy(my_list[0], 2, Length(my_list[0]) - 2);
-
-            with LineSeries do begin
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-
-                       if (f(x) >= f2(x)) then begin
-                          le_area.AddXY(x, f(x));
-                          le_area_inter.AddXY(x, f2(x));
-                       end
-                       else begin
-                           le_area.AddXY(x, f2(x));
-                           le_area_inter.AddXY(x, f(x));
-                       end;
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-            le_area.Active:= True;
-            le_area_inter.Active:= True;
-
-            LineSeries.ShowLines:= True;
-            LineSeries.LinePen.Color:= clBlue;
-            LineSeries.Active:= True;
-
-            Chart1.AddSeries( LineSeries );
-
-            //function g
-
-            x := xmin;
-            LineSeries := TLineseries.Create( Chart1 );
-
-            le_parser.Expression:= Copy(my_list[1], 2, Length(my_list[1]) - 2);
-
-            with LineSeries do begin
-                 ShowLines:= True;
-                 LinePen.Color:= clRed;
-                 Active:= True;
-                 repeat
-                       le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
-                          x := x + 0.01;
-                          Continue;
-                       end;
-                       AddXY(x, le_parser.Evaluate());
-                       //le_area.AddXY(x, le_parser.Evaluate());
-                       if (f(x) > f2(x)) then
-                          le_area.AddXY(x, f(x))
-                       else
-                          le_area.AddXY(x, f2(x));
-                       x := x + 0.01;
-                 until (x >= xmax);
-            end;
-
-            Chart1.AddSeries(LineSeries);
-
-            Chart1.AddSeries( le_area );
-            Chart1.AddSeries(le_area_inter);
-
-            Chart1.Proportional:= False;
-            Chart1.Extent.XMin := StrToFloat(my_list[2]);
-            Chart1.Extent.XMax := StrToFloat(my_list[3]);
-
-            Chart1.Visible:= True;
-
-            ShowMessage('Resultado Integral: ' + FloatToStr(res) + ' unidades.');
-            memHistorial.Text:= memHistorial.Text + func + LineEnding;
-            memHistorial.Text:= memHistorial.Text + 'Resultado Integral: ' + FloatToStr(res) + ' unidades.' + LineEnding;
-
-
+            finding_area(my_list);
           end;
           'edo': begin
             Chart1.Visible:= True;
