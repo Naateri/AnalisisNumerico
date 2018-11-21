@@ -236,10 +236,10 @@ root_finder.func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) );
             with LineSeries do begin
                  repeat
                        le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
+                       {if (le_parser.Evaluate() = NaN) then begin
                           x := x + 0.01;
                           Continue;
-                       end;
+                       end;}
                        AddXY(x, le_parser.Evaluate());
                        x := x + 0.01;
                  until (x >= xmax);
@@ -410,10 +410,10 @@ begin
               with LineSeries do begin
                    repeat
                          le_parser.NewValue('x', x);
-                         if (le_parser.Evaluate() = NaN) then begin
+                         {if (le_parser.Evaluate() = NaN) then begin
                             x := x + 0.01;
                             Continue;
-                         end;
+                         end;}
                          AddXY(x, le_parser.Evaluate());
                          le_area.AddXY(x, le_parser.Evaluate());
                          x := x + 0.01;
@@ -501,10 +501,10 @@ begin
             with LineSeries do begin
                  repeat
                        le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
+                       {if (le_parser.Evaluate() = NaN) then begin
                           x := x + 0.01;
                           Continue;
-                       end;
+                       end;}
                        AddXY(x, le_parser.Evaluate());
 
                        {if (f(x) >= f2(x)) then begin
@@ -540,10 +540,10 @@ begin
                  Active:= True;
                  repeat
                        le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
+                       {if (le_parser.Evaluate() = NaN) then begin
                           x := x + 0.01;
                           Continue;
-                       end;
+                       end;}
                        AddXY(x, le_parser.Evaluate());
                        //le_area.AddXY(x, le_parser.Evaluate());
                        {if (f(x) > f2(x)) then
@@ -894,10 +894,10 @@ begin
             with LineSeries do begin
                  repeat
                        le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
+                       {if (le_parser.Evaluate() = NaN) then begin
                           x := x + 0.01;
                           Continue;
-                       end;
+                       end;}
                        AddXY(x, le_parser.Evaluate());
                        x := x + 0.01;
                  until (x >= xmax);
@@ -1013,10 +1013,10 @@ begin
             with LineSeries do begin
                  repeat
                        le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
+                       {if (le_parser.Evaluate() = NaN) then begin
                           x := x + 0.01;
                           Continue;
-                       end;
+                       end;}
                        AddXY(x, le_parser.Evaluate());
                        x := x + 0.01;
                  until (x >= xmax);
@@ -1041,10 +1041,10 @@ begin
             with LineSeries do begin
                  repeat
                        le_parser.NewValue('x', x);
-                       if (le_parser.Evaluate() = NaN) then begin
+                       {if (le_parser.Evaluate() = NaN) then begin
                           x := x + 0.01;
                           Continue;
-                       end;
+                       end;}
                        AddXY(x, le_parser.Evaluate());
                        x := x + 0.01;
                  until (x >= xmax);
