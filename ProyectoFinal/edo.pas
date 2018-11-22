@@ -14,18 +14,24 @@ type
     answers: array of Real;
     xn_s: array of Real;
     yn_s: array of Real;
+    zn_s: array of Real;
     a, b: Real;
     parser: TParseMath;
     func_d: String;
+    sedo_funcs: array of String;
+    sedo_ans: array of Real;
+    sedo_initial_values: array of Real;
     method: Integer;
     function euler(): Real;
     function heun(): Real;
     function rk4(): Real;
     function dormand_prince(): Real;
     function rk_fehlberg(): Real;
+    function sedo_rk4(): Real;
     function Execute(): Real;
     private
       function fd(x: Real; y: Real): Real;
+      function fd_sedo(x: Real; y: Real; z: Real; expr: String): Real;
       function f_euler(i: Integer): Real;
     public
       constructor create();
@@ -48,6 +54,9 @@ begin
      parser.AddVariable('x', 0);
      parser.AddVariable('y', 0);
      parser.Expression:= 'x+y'; }
+     SetLength(sedo_funcs, 2);
+     SetLength(sedo_ans,2);
+     SetLength(sedo_initial_values, 2);
 end;
 
 destructor TEdo.Destroy;
@@ -61,6 +70,15 @@ begin
      parser.NewValue('x', x);
      parser.NewValue('y', y);
      parser.Expression:= func_d;
+     Result := parser.Evaluate();
+end;
+
+function TEdo.fd_sedo(x: Real; y: Real; z: Real; expr: String): Real;
+begin
+     parser.NewValue('x', x);
+     parser.NewValue('y', y);
+     parser.NewValue('z', z);
+     parser.Expression:= expr;
      Result := parser.Evaluate();
 end;
 
@@ -261,6 +279,52 @@ begin
 
      Result := yn_s[iters];
 end;
+
+function TEdo.sedo_rk4(): Real;
+var
+  iters, i: Integer;
+  k1, k2, k3, k4, m: Real;
+begin
+     iters := round ((b-a) / h);
+     h := Sign(b-a) * h;
+     iters := abs(iters);
+
+     SetLength(answers, iters+1);
+     SetLength(xn_s, iters+1);
+     SetLength(yn_s, iters+1);
+     SetLength(zn_s, iters+1);
+     answers[0] := x_0;
+     xn_s[0] := x_0;
+     yn_s[0] := sedo_initial_values[0];
+     zn_s[0] := sedo_initial_values[1];
+
+     for i := 1 to iters do begin
+       k1 := fd_sedo(xn_s[i-1], yn_s[i-1], zn_s[i-1], sedo_funcs[0]);
+       k2 := fd_sedo(xn_s[i-1] + h/2, yn_s[i-1] + ( h/2 * k1), zn_s[i-1] + ( h/2 * k1), sedo_funcs[0] );
+       k3 := fd_sedo(xn_s[i-1] + h/2, yn_s[i-1] + ( h/2 * k2), zn_s[i-1] + ( h/2 * k2), sedo_funcs[0] );
+       k4 := fd_sedo(xn_s[i-1] + h, yn_s[i-1] + ( h * k3), zn_s[i-1] + ( h * k3), sedo_funcs[0] );
+       {k1 := h * fd(xn_s[i-1], yn_s[i-1]);
+       k2 := h * fd(xn_s[i-1] + h/2, yn_s[i-1] + ( k1/2 ) );
+       k3 := h * fd(xn_s[i-1] + h/2, yn_s[i-1] + ( k2/2 ) );
+       k4 := h * fd(xn_s[i-1] + h, yn_s[i-1] + (k3) ); }
+       m := (k1 + 2*k2 + 2*k3 + k4) / 6;
+       yn_s[i] := yn_s[i-1] + h * m;
+
+       k1 := fd_sedo(xn_s[i-1], yn_s[i-1], zn_s[i-1], sedo_funcs[1]);
+       k2 := fd_sedo(xn_s[i-1] + h/2, yn_s[i-1] + ( h/2 * k1), zn_s[i-1] + ( h/2 * k1), sedo_funcs[1] );
+       k3 := fd_sedo(xn_s[i-1] + h/2, yn_s[i-1] + ( h/2 * k2), zn_s[i-1] + ( h/2 * k2), sedo_funcs[1] );
+       k4 := fd_sedo(xn_s[i-1] + h, yn_s[i-1] + ( h * k3), zn_s[i-1] + ( h * k3), sedo_funcs[1] );
+       m := (k1 + 2*k2 + 2*k3 + k4) / 6;
+       zn_s[i] := zn_s[i-1] + h * m;
+
+       xn_s[i] := xn_s[i-1] + h;
+//       ShowMessage('yn: ' + FloatToStr(yn_s[i]));
+     end;
+     Result := yn_s[iters];
+     sedo_ans[0] := yn_s[iters];
+     sedo_ans[1] := zn_s[iters];
+end;
+
 
 
 function TEdo.Execute(): Real;

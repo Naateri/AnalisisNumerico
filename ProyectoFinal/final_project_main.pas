@@ -1088,6 +1088,50 @@ begin
           'edo': begin
             finding_edo(my_list);
           end;
+          'sedo': begin //sedo(['funcs'];initial_value_x;[initial_values];x_n)
+            edo_solver := TEdo.create();
+            edo_solver.parser := le_parser;
+            edo_solver.h:= error;
+
+            le_parser.Expression:= my_list[1];
+//            ShowMessage('expr: ' + le_parser.Expression);
+            edo_solver.x_0:= le_parser.Evaluate();
+            edo_solver.a:= le_parser.Evaluate();
+
+            le_parser.Expression:= my_list[3];
+            edo_solver.b := le_parser.Evaluate();
+
+            array_list := TStringList.Create;
+            temp := Trim(my_list[0]);
+            iPos := Pos( ']', temp);
+            array_list.Delimiter:= ',';
+            array_list.StrictDelimiter:= True;
+            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+
+            for i:= 0 to 1 do begin
+              edo_solver.sedo_funcs[i] := find_string(Copy(array_list[i], 2, Length(array_list[i]) - 2) );
+            end;
+            //parse
+
+            array_list.Clear;
+
+            temp := Trim(my_list[2]);
+            iPos := Pos( ']', temp);
+            array_list.Delimiter:= ',';
+            array_list.StrictDelimiter:= True;
+            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+
+            for i := 0 to 1 do begin
+               le_parser.Expression:= array_list[i];
+               edo_solver.sedo_initial_values[i] := le_parser.Evaluate();
+            end;
+
+            res:= edo_solver.sedo_rk4();
+
+            memHistorial.Text := memHistorial.Text + 'Resultado para y: ' + FloatToStr(edo_solver.sedo_ans[0]) + LineEnding;
+            memHistorial.Text := memHistorial.Text + 'Resultado para z: ' + FloatToStr(edo_solver.sedo_ans[1]) + LineEnding;
+
+          end;
      end;
 //  Chart1FuncSeries1.Extent.UseXMin := False;
 //  Chart1FuncSeries1.Extent.UseXMax := False;
