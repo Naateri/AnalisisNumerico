@@ -51,9 +51,10 @@ error = 0.01
 interface
 
 uses
-  Classes, SysUtils, FileUtil, uCmdBox, TAGraph, TAFuncSeries, TASeries, Forms, math,
-  Controls, Graphics, Dialogs, Grids, StdCtrls, ExtCtrls, nle_methods, lagrange_pol, Integrals,
-  edo, MyMatrix, NonLinearSystem, ParseMath;
+  Classes, SysUtils, FileUtil, uCmdBox, TAGraph, TAFuncSeries, TASeries,
+  TATools, Forms, math, Controls, Graphics, Dialogs, Grids, StdCtrls, ExtCtrls,
+  nle_methods, lagrange_pol, Integrals, edo, MyMatrix, NonLinearSystem, TAChartUtils,
+  ParseMath, Types;
 
 type
 
@@ -62,6 +63,10 @@ type
   TForm1 = class(TForm)
     Chart1: TChart;
     Chart1LineSeries1: TLineSeries;
+    ChartToolset1: TChartToolset;
+    ChartToolset1DataPointClickTool1: TDataPointClickTool;
+    ChartToolset1PanClickTool1: TPanClickTool;
+    ChartToolset1ZoomDragTool1: TZoomDragTool;
     CmdBox1: TCmdBox;
     memHistorial: TMemo;
     Panel1: TPanel;
@@ -69,6 +74,8 @@ type
     StringGrid1: TStringGrid;
     procedure Chart1FuncSeries1Calculate(const AX: Double; out AY: Double);
     procedure Chart1FuncSeries2Calculate(const AX: Double; out AY: Double);
+    procedure ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool;
+      APoint: TPoint);
     procedure CmdBox1Input(ACmdBox: TCmdBox; Input: string);
     procedure FormCreate(Sender: TObject);
     function CreatingStrings(Input: string): String;
@@ -98,6 +105,9 @@ type
     LineSeries: TLineSeries;
     le_area: TAreaSeries;
     le_area_inter: TAreaSeries;
+    clickFunc1: Boolean;
+    func1: String;
+    functions_list: TStringList;
   end;
 
   my_function = class
@@ -140,6 +150,8 @@ procedure TForm1.FormCreate(Sender: TObject);
 var
   i: Integer;
 begin
+  functions_list := TStringList.Create;
+  clickFunc1:= False;
   error := 0.01;
   decimal := 2;
   CmdBox1.StartRead(clWhite, clBlack, 'Numerico>', clWhite, clBlack);
@@ -226,6 +238,10 @@ root_finder.func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) );
             Chart1.Extent.XMax := root_finder.b;
 
             res := root_finder.Execute();
+            if (root_finder.found_solution = False) then begin
+                ShowMessage('No se encontro una raiz.');
+                memHistorial.Text:= memHistorial.Text + 'Root(s) not found.' + LineEnding;
+            end else begin
             ShowMessage('Root: ' + FloatToStr( res ) );
 
             LineSeries := TLineseries.Create( Chart1 );
@@ -269,7 +285,10 @@ root_finder.func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) );
             Chart1.AddSeries(LineSeries);
             Chart1.Visible:= True;
             Result := res;
+            functions_list.Add(root_finder.func);
             //root_finder.Destroy;
+
+            end; //else end
 
 end;
 
@@ -290,6 +309,8 @@ begin
             array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
             lagrange_solver.num_points:= array_list.Count;
             SetLength(pts, lagrange_solver.num_points, 2);
+            if (lagrange_solver.num_points > 6) then
+               ShowMessage('Recomendacion: Solo tomar 6 puntos.');
 
             for iPos := 0 to array_list.Count - 1 do
                 pts[iPos][0] := StrToFloat(array_list[iPos]);
@@ -369,6 +390,7 @@ var
 begin
      integral_solver := TIntegralMethods.create;
               integral_solver.func:= find_string( Copy(my_list[0], 2, Length(my_list[0]) - 2) );
+              functions_list.Add(integral_solver.func);
               le_parser.Expression:= my_list[1];
 //integral_solver.a := StrToFloat(my_list[1]);
              integral_solver.a := le_parser.Evaluate();
@@ -406,6 +428,7 @@ begin
               le_area.AreaLinesPen.Style:= psClear;
 
               le_parser.Expression:= integral_solver.func;
+              functions_list.Add(integral_solver.func);
 
               with LineSeries do begin
                    repeat
@@ -498,6 +521,8 @@ begin
 
             le_parser.Expression:= current_func;
 
+            functions_list.Add(current_func);
+
             with LineSeries do begin
                  repeat
                        le_parser.NewValue('x', x);
@@ -533,6 +558,7 @@ begin
             LineSeries := TLineseries.Create( Chart1 );
 
             le_parser.Expression:= current_func2;
+            functions_list.Add(current_func2);
 
             with LineSeries do begin
                  ShowLines:= True;
@@ -916,6 +942,8 @@ begin
             memHistorial.Text:= memHistorial.Text + 'funcion ' + current_func + ' graficada ' +
             'de ' + my_list[1] + ' a ' + my_list[2] + LineEnding;
 
+            functions_list.Add(current_func);
+
 //            functions.Add( LineSeries );
 
 //            ShowMessage('Grafica. (f,a,b,color)'); SYNTAX
@@ -929,7 +957,7 @@ begin
           'senl': begin
             senl_solver := NLSystems.create;
             Chart1.Visible:= False;
-            senl_solver.Parse := le_parser;
+            //senl_solver.Parse := le_parser;
             senl_solver.ErrorAllowed:= h;
             array_list := TStringList.Create;
             temp := Trim(my_list[1]);
@@ -948,6 +976,22 @@ begin
                 senl_solver.equations[i] := 'x';
 
               array_list.Clear;
+            SetLength(senl_solver.variables, 4);
+            temp := Trim(my_list[0]);
+            iPos := Pos( ']', temp);
+            array_list.Delimiter:= ',';
+            array_list.StrictDelimiter:= True;
+            array_list.DelimitedText:= Copy(temp, 2, Length(temp) - 2);
+
+            for iPos := 0 to array_list.Count - 1 do begin
+              senl_solver.variables[iPos] := find_string(Copy(array_list[iPos],2,Length(array_list[iPos])-2));
+            end;
+
+            {for i := iPos + 1 to 3 do //if less than 4 equations
+                senl_solver.variables[i] := 'abcd'; }
+
+
+            array_list.Clear;
             temp := Trim(my_list[2]);
             iPos := Pos( ']', temp);
             array_list.Delimiter:= ',';
@@ -1003,12 +1047,18 @@ begin
             Chart1.Extent.XMax := xmax;
 
             res := root_finder.Intersection();
+            if (root_finder.found_solution = False) then begin
+                ShowMessage('No se encontro una raiz.');
+                memHistorial.Text:= memHistorial.Text + 'Root(s) not found.' + LineEnding;
+            end else begin
             ShowMessage('Intersection: (' + FloatToStr(res) + ', ' + FloatToStr( root_finder.f2(res)) + ')' );
             Chart1.Proportional:= False;
 
             LineSeries := TLineseries.Create( Chart1 );
 
             le_parser.Expression:= current_func;
+            functions_list.Add(current_func);
+            functions_list.Add(current_func2);
 
             with LineSeries do begin
                  repeat
@@ -1077,6 +1127,7 @@ begin
             memHistorial.Text := memHistorial.Text + LineEnding;
 //            ShowMessage('intersection(f,g,a,b,colorf,colorg). Interseccion de dos funciones en un intervalo.' +
 //            ' Todos los puntos.'); SYNTAX
+              end; //else end
           end;
           'integral': begin
             finding_integral(my_list);
@@ -1094,7 +1145,7 @@ begin
             edo_solver.h:= error;
 
             le_parser.Expression:= my_list[1];
-            ShowMessage('expr: ' + le_parser.Expression);
+//            ShowMessage('expr: ' + le_parser.Expression);
             edo_solver.x_0:= le_parser.Evaluate();
             edo_solver.a:= le_parser.Evaluate();
 
@@ -1142,13 +1193,16 @@ begin
 //              SetLength(TSeries, 4);
 //              Chart1.Series.Clear;
               Chart1.ClearSeries;
+              functions_list.Destroy;
+              functions_list := TStringList.Create;
+//              functions_list.Clear;
 //              Chart1.Refresh;
             end;
             'help': begin ShowMessage('Las siguientes funciones pueden ser ingresadas: ' + LineEnding
-            + 'create(var_name, var_value): crea una variable de tipo Real/Float. Puede guardar funciones de tipo:'
+            + 'create(var_name; var_value): crea una variable de tipo Real/Float. Puede guardar funciones de tipo:'
             + 'root (si se hallan todas las raices guarda la ultima), integral, area y edo.'+ LineEnding
-         + 'update(var_name, var_value): actualiza el valor de una variable' + LineEnding
-           +'create_s(var_name, var_value): crea una variable de tipo string. Puede guardar funciones de polynomial y polyroot' + LineEnding
+         + 'update(var_name; var_value): actualiza el valor de una variable' + LineEnding
+           +'create_s(var_name; var_value): crea una variable de tipo string. Puede guardar funciones de polynomial y polyroot' + LineEnding
           + 'root(f;a;b;true/false;method): f es la función, a y b el intervalo, los métodos pueden ser: ' +
            'Biseccion (0), Falsa Posicion (1), Secante (2). True (1) o False (0)' +
             ' te dice si puedes hallar todas las raíces.'+ LineEnding
@@ -1158,14 +1212,16 @@ begin
             + 'polynomial([1,2,3];[3,-3,4]): devuelve una función dados unos puntos. ' +
             'Primer array: valores en x. Segundo array: valores en y.' + LineEnding
             + 'senl([variables];[ecuaciones];[valores_iniciales]): resuelve el sistema de ecuaciones propuesto.' + LineEnding
-            + 'intersection(f,g,a,b,color1,color2): halla la intersección entre dos funciones. '
+            + 'intersection(f;g;a;b;color1;color2): halla la intersección entre dos funciones. '
             + 'f y g son funciones, a y b el intervalo donde va a hallar la o las intersecciones, '
             + 'color1 y color2 son los colores de f y g respectivamente.' + LineEnding
-            + 'integral(f,a,b,method): halla el valor de la integral de f en los intervalos a y b. Grafica el area.'
+            + 'integral(f;a;b;method): halla el valor de la integral de f en los intervalos a y b. Grafica el area.'
             + ' Method: 0 es trapecio, 1 es Simpson 1/3, 2 es Simpson 3/8' + LineEnding
-            + 'area(f,g,a,b,method): halla la integral entre f y g en el intervalo [a,b].' + LineEnding
+            + 'area(f;g;a;b;method): halla la integral entre f y g en el intervalo [a,b].' + LineEnding
             + 'edo(df, x0, y0, xn, method): plottea la funcion primitiva de df, desde x0 hasta yn.' +
-            'method: 0->Euler, 1->Heun, 2->Runge Kutta cuarto orden, 3->Dormand-Prince. ' + LineEnding
+            'method: 0->Euler, 1->Heun, 2->Runge Kutta cuarto orden, 3->Dormand-Prince, 4->rk-fehlberg. ' + LineEnding
+            + 'sedo([differential_functions];x0;[vars_initial_values];xn): utilizando Runge Kutta de cuarto orden, '
+            + 'resuelve el sistema de ecuaciones diferenciales ordinarias. (Maximo 2, variables y z). ' + LineEnding
             );
             memHistorial.Text:= memHistorial.Text + func;
           end;
@@ -1210,6 +1266,86 @@ begin
   //AY := m_function.f(AX);
   AY := le_parser.Evaluate();}
   AY := 0;
+
+end;
+
+procedure TForm1.ChartToolset1DataPointClickTool1PointClick(ATool: TChartTool;
+  APoint: TPoint);
+var
+  x,y: Real;
+  newA, Res, temp, tempX: Real;
+  pg: TDoublePoint;
+  i: Integer;
+  Methods: TNLEMethods;
+begin
+     pg := Chart1.ImageToGraph(APoint);
+     Methods := TNLEMethods.create;
+     with ATool as TDataPointClickTool do begin
+       x := pg.X;
+       y := pg.Y;
+//       ShowMessage('x: ' + FloatToStr(x) + ', y: ' + FloatToStr(y));
+       if (clickFunc1 = False) then begin
+          for i := 0 to functions_list.Count - 1 do begin
+            le_parser.Expression:= functions_list[i];
+            le_parser.NewValue('x', x);
+            temp:= le_parser.Evaluate();
+            if ( abs(temp - y) <= 0.1) then begin
+               func1:= functions_list[i];
+               ShowMessage('funcion seleccionada: ' + func1);
+               clickFunc1 := True;
+               Break;
+            end;
+          end;
+          Exit;
+       end;
+
+       if (clickFunc1 = True) then begin
+          //newA := (pg.X + tempX) / 2;
+          methods.a:= Chart1.Extent.XMin;
+          methods.func:= func1;
+          methods.b:= Chart1.Extent.XMax;
+          for i := 0 to functions_list.Count - 1 do begin
+//            ShowMessage('current func: ' + functions_list[i]);
+            le_parser.Expression:= functions_list[i];
+            le_parser.NewValue('x', x);
+            temp:= le_parser.Evaluate();
+            if ( abs(temp - y) <= 0.1) then begin
+               Methods.func2 := functions_list[i];
+               ShowMessage('funcion seleccionada: ' + Methods.func2);
+               Break;
+            end;
+          end;
+
+          if (Methods.func = Methods.func2) then begin
+             ShowMessage('Ha seleccionado la misma funcion dos veces. Vuelva a intentarlo.');
+             clickFunc1:= False;
+             Exit;
+          end;
+          Methods.Parse := le_parser;
+          Res:= Methods.Intersection();
+          LineSeries := TLineSeries.Create(Chart1);
+          LineSeries.ShowLines:= False;
+          LineSeries.ShowPoints:= True;
+          for i := 0 to Methods.results_size - 1 do begin
+              LineSeries.AddXY(Methods.results[i], Methods.f2(Methods.results[i]));
+          end;
+          LineSeries.ShowPoints:= True;
+          LineSeries.ShowLines:= False;
+
+          Chart1.AddSeries( LineSeries );
+          memHistorial.Text:= memHistorial.Text + 'Intersection' + LineEnding;
+          memHistorial.Text:= memHistorial.Text + 'Raices: ';
+          for i := 0 to Methods.results_size - 1 do begin
+              memHistorial.Text := memHistorial.Text + '(' + FloatToStr(Methods.results[i]) + ', ' +
+              FloatToStr( Methods.f2(res)) + ')' + ', ';
+          end;
+          memHistorial.Text := memHistorial.Text + LineEnding;
+          clickFunc1 := False;
+
+       end;
+//clickFunc1:= True;
+       tempX := x;
+     end;
 
 end;
 

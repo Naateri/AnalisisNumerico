@@ -24,10 +24,10 @@ type
     start_x, start_y, start_z, start_w: Real;
     starts: array of Real;
     tempParse: TParseMath;
+    Parse: TParseMath;
     function NewtonRaphson(): mat;
     private
       Error: Real;
-      Parse: TParseMath;
       Matrices: MMatrix;
   public
   constructor create;
@@ -101,7 +101,7 @@ begin
      SetLength(Jacobian, 2, 2);
      SetLength(points, 2, 1);  }
 //     setLength(equations, 4);
-     setLength(variables, 4);
+//     setLength(variables, 4);
      setLength(prev_solutions, 4);
      setLength(solutions, 4);
 
@@ -110,15 +110,20 @@ begin
      equations[2] := ecu3;
      equations[3] := ecu4; }
 
-     variables[0] := 'x';
+  {   variables[0] := 'x';
      variables[1] := 'y';
      variables[2] := 'z';
-     variables[3] := 'w';
+     variables[3] := 'w';}
 
 {     solutions[0] := start_x;
      solutions[1] := start_y;
      solutions[2] := start_z;
      solutions[3] := start_w;}
+
+     for i := 0 to 3 do begin
+       Parse.AddVariable(variables[i], 0);
+       ShowMessage('Adding: ' + variables[i]);
+     end;
 
      solutions[0] := starts[0];
      solutions[1] := starts[1];

@@ -39,6 +39,7 @@ object Form1: TForm1
       Title.Text.Strings = (
         'TAChart'
       )
+      Toolset = ChartToolset1
       Align = alTop
       Visible = False
       object Chart1LineSeries1: TLineSeries
@@ -105,6 +106,21 @@ object Form1: TForm1
         'memHistorial'
       )
       TabOrder = 1
+    end
+  end
+  object ChartToolset1: TChartToolset
+    left = 104
+    top = 64
+    object ChartToolset1DataPointClickTool1: TDataPointClickTool
+      Shift = [ssLeft]
+      OnPointClick = ChartToolset1DataPointClickTool1PointClick
+    end
+    object ChartToolset1ZoomDragTool1: TZoomDragTool
+      Shift = [ssLeft]
+    end
+    object ChartToolset1PanClickTool1: TPanClickTool
+      Shift = [ssRight]
+      Interval = 1
     end
   end
 end

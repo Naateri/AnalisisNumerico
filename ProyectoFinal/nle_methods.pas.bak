@@ -23,6 +23,7 @@ type
       Parse: TParseMath;
       results_size: Integer;
       results: array of real;
+      found_solution: Boolean;
       function f(x: Real): Real;
       function f2(x: Real): Real;
       function fd(x: Real): Real; //differential
@@ -70,6 +71,7 @@ begin
      MethodList.AddObject('Newton', TObject (IsNewton) );
      MethodList.AddObject('Secante', TObject (IsSecant) );
      MethodList.AddObject('Punto Fijo', TObject (IsFixedPoint) );
+     found_solution:= True;
 {     Parse := TParseMath.create();
      Parse.AddVariable( 'x', 0);
      Parse.Expression:= 'x'; }
@@ -137,6 +139,7 @@ begin
      if (not evalBolzano) then
      begin
           ShowMessage('No se cumple el Teorema de Bolzano. Escoja otro intervalo.');
+          found_solution:= False;
           Exit;
      end;
      newA := a;
@@ -184,10 +187,11 @@ var n: Integer = 0;
    sign: Real;
    evalBolzano: Boolean;
 begin
-//     Parse.Expression:= func;
+     Parse.Expression:= func;
      evalBolzano:= Bolzano();
      if (not evalBolzano) then
      begin
+          found_solution:= False;
           ShowMessage('No se cumple el Teorema de Bolzano. Escoja otro intervalo.');
           Exit;
      end;
@@ -264,7 +268,7 @@ end;
 function TNLEMethods.Secante(): Real;
 var n: Integer = 0;
    xn, xnn, newError: Real; //xnn: newest result, xn: stores previous result
-   h, fxn, fxnh: Real;
+   h, fxn, fxnh, prev_error: Real;
 begin
 //     Parse.Expression:= func;
      h := error/10;
@@ -273,6 +277,7 @@ begin
      //SolutionSequence.Add(FloatToStr(xnn));
      repeat
        nSequence.Add(IntToStr(n));
+       prev_error:= newError;
        xn := xnn; //storing previous value
        fxn := f(xn);
        fxnh := f(xn+h) - f(xn-h);
@@ -286,6 +291,12 @@ begin
        if (n > 0) then
        begin
               newError := abs(xn - xnn);
+              if (prev_error < newError) then begin
+                 ShowMessage('El error esta oscilando.');
+                 found_solution:= False;
+                 Exit;
+              end;
+
               ErrorSequence.Add(FloatToStr(newError));
        end
        else
@@ -407,6 +418,11 @@ begin
             newB := newB + 0.1;
      end;
      results_size := n;
+     if results_size = 0 then begin
+         ShowMessage('No se encontraron respuestas.');
+         found_solution:= False;
+         Exit;
+     end;
 //     Result := xnn;
 end;
 
