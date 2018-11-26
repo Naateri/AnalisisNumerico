@@ -120,6 +120,7 @@ object Form1: TForm1
     end
     object ChartToolset1PanClickTool1: TPanClickTool
       Shift = [ssRight]
+      Interval = 1
     end
   end
 end

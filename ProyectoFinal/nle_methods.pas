@@ -55,7 +55,7 @@ type
 implementation
 
 const
-     Top = 10000;
+     Top = 100000;
 
 constructor TNLEMethods.create;
 begin
@@ -399,7 +399,7 @@ var n: Integer = 0;
 begin
      Parse.Expression := func;
      newA := a;
-     newB := a + 0.1;
+     newB := a + 0.15;
      tempb := b;
      results_size:= 0;
 //     ShowMessage('all roots');
@@ -414,8 +414,8 @@ begin
                results[n] := Result;
                n := n + 1;
            end;
-            newA := newA + 0.1;
-            newB := newB + 0.1;
+            newA := newA + 0.15;
+            newB := newB + 0.15;
      end;
      results_size := n;
      if results_size = 0 then begin

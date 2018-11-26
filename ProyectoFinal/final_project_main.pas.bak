@@ -499,16 +499,16 @@ begin
             xmin:= integral_solver.a;
             xmax:= integral_solver.b;
 
-            {le_area := TAreaSeries.Create(Chart1);
-            le_area_inter := TAreaSeries.Create(Chart1);
+            le_area := TAreaSeries.Create(Chart1);
+            //le_area_inter := TAreaSeries.Create(Chart1);
 
             le_area.UseZeroLevel:= True;
-            le_area.AreaBrush.Color:= clGreen;
+            le_area.AreaBrush.Color:= clWhite;
             le_area.AreaContourPen.Color:= clRed;
             le_area.AreaContourPen.Style:= psDot;
             le_area.AreaContourPen.Width:= 3;
             le_area.AreaLinesPen.Style:= psClear;
-
+            {
             le_area_inter.UseZeroLevel:= True;
             le_area_inter.AreaBrush.Color:= clYellow;
             le_area_inter.AreaContourPen.Color:= clBlue;
@@ -531,6 +531,8 @@ begin
                           Continue;
                        end;}
                        AddXY(x, le_parser.Evaluate());
+                       le_area.AddXY(x, f2(x));
+                       le_area.AddXY(x,f(x));
 
                        {if (f(x) >= f2(x)) then begin
                           le_area.AddXY(x, f(x));
@@ -543,8 +545,8 @@ begin
                        x := x + 0.01;
                  until (x >= xmax);
             end;
-{            le_area.Active:= True;
-            le_area_inter.Active:= True; }
+            le_area.Active:= True;
+{            le_area_inter.Active:= True; }
 
             LineSeries.ShowLines:= True;
             LineSeries.LinePen.Color:= clBlue;
@@ -582,8 +584,8 @@ begin
 
             Chart1.AddSeries(LineSeries);
 
-{            Chart1.AddSeries( le_area );
-            Chart1.AddSeries(le_area_inter); }
+            Chart1.AddSeries( le_area );
+{            Chart1.AddSeries(le_area_inter); }
 
             Chart1.Proportional:= False;
             Chart1.Extent.XMin := xmin;

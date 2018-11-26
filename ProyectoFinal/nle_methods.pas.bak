@@ -55,7 +55,7 @@ type
 implementation
 
 const
-     Top = 10000;
+     Top = 100000;
 
 constructor TNLEMethods.create;
 begin
@@ -219,7 +219,7 @@ begin
             newA := xnn
        else //xn is solution
             begin
-                if (newA = 0) then
+                if (f(newA) = 0) then
                    Result := xnn
                 else //xn is 0
                    Result := newA;
